@@ -9,7 +9,6 @@ from datetime import datetime
 from backend.auth import get_current_session
 from backend.core_integration import get_core_integration
 from backend.validators.publication_validator import PublicationValidator
-from backend.mappers.request_mapper import RequestMapper
 from backend.mappers.response_mapper import ResponseMapper
 from core.database.config import get_db
 

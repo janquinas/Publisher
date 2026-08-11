@@ -13,7 +13,6 @@ from backend.controllers import (
     analytics_controller,
     auth_controller,
     health_controller,
-    home_controller,
     media_controller,
 )
 from backend.exceptions.handlers import setup_exception_handlers
@@ -46,7 +45,6 @@ def create_app() -> FastAPI:
     setup_exception_handlers(app)
 
     # Routers
-    app.include_router(home_controller.router, tags=["Home"])
     app.include_router(health_controller.router, tags=["Health"])
     app.include_router(publication_controller.router, prefix="/api/publications", tags=["Publications"])
     app.include_router(platform_controller.router, prefix="/api/platforms", tags=["Platforms"])

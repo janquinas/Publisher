@@ -10,12 +10,14 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).parent))
 
 from backend.main import app
-from core.database.config import SessionLocal
+from core.database.config import SessionLocal, init_db
 from core.database.models.user import UserDB
 
 
 @pytest.fixture(autouse=True)
 def clean_users():
+    # Garantir que as tabelas existam antes de qualquer operacao
+    init_db()
     db = SessionLocal()
     try:
         db.query(UserDB).filter(UserDB.email == "nova@teste.com").delete(synchronize_session=False)

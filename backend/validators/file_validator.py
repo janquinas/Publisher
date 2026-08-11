@@ -2,7 +2,6 @@
 File Validator - Validação de arquivos de mídia
 """
 import os
-from typing import List
 
 
 class FileValidator:

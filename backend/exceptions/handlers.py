@@ -4,7 +4,6 @@ Exception Handlers - Handlers customizados para exceções
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 from datetime import datetime
-from typing import Dict, Any
 
 from backend.exceptions.custom_exceptions import BaseAPIException
 

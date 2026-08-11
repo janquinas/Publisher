@@ -18,6 +18,20 @@
         }
     }
 
+    // Alias retrocompatível: usado por login.html e cadastro.html
+    function persistirAuth(data) {
+        const user = (data && data.user) || {};
+        if (data && data.token) setToken(data.token);
+        if (user.name) localStorage.setItem('auth_name', user.name);
+        if (user.email) localStorage.setItem('auth_email', user.email);
+        if (user.profile_photo) {
+            localStorage.setItem('auth_photo', user.profile_photo);
+        } else {
+            localStorage.removeItem('auth_photo');
+        }
+        localStorage.setItem('auth_user', JSON.stringify(user));
+    }
+
     function getUserFromStorage() {
         return {
             id: localStorage.getItem('auth_id') || '',
@@ -136,7 +150,8 @@
     // `onPreview(photo)` atualiza a imagem temporariamente; `onSave(photo)` persiste.
     window.App = {
         getToken: getToken, setToken: setToken, clearToken: clearToken,
-        persistUser: persistUser, getUserFromStorage: getUserFromStorage,
+        persistUser: persistUser, persistirAuth: persistirAuth,
+        getUserFromStorage: getUserFromStorage,
         consumeGoogleToken: consumeGoogleToken, requireAuth: requireAuth,
         loadUser: loadUser, renderHeader: renderHeader,
         avatarFallback: avatarFallback,
@@ -201,5 +216,37 @@
             App.setupDiscordLinks();
             App.setupModals();
         }
+    };
+
+    // Retrocompatibilidade: login.html e cadastro.html chamam persistirAuth() no escopo global
+    window.persistirAuth = persistirAuth;
+
+    // ---------------------------------------------------------------------
+    // Configuracoes do usuario — centralizadas (antes duplicadas em 5 HTMLs)
+    // ---------------------------------------------------------------------
+    // Carrega preferencias salvas em localStorage para o modal de configuracoes
+    window.carregarConfiguracoes = function () {
+        const cfg = JSON.parse(localStorage.getItem('app_config') || '{}');
+        const emailChk = document.getElementById('cfg-email-notif');
+        const pushChk  = document.getElementById('cfg-push-notif');
+        const failChk  = document.getElementById('cfg-fail-alert');
+        if (emailChk) emailChk.checked = cfg.emailNotif !== false;
+        if (pushChk)  pushChk.checked  = cfg.pushNotif  === true;
+        if (failChk)  failChk.checked  = cfg.failAlert  !== false;
+    };
+
+    // Salva preferencias e fecha o modal (usado em onclick dos HTMLs)
+    window.salvarConfiguracoes = function () {
+        const emailChk = document.getElementById('cfg-email-notif');
+        const pushChk  = document.getElementById('cfg-push-notif');
+        const failChk  = document.getElementById('cfg-fail-alert');
+        localStorage.setItem('app_config', JSON.stringify({
+            emailNotif: emailChk ? emailChk.checked : true,
+            pushNotif:  pushChk  ? pushChk.checked  : false,
+            failAlert:  failChk  ? failChk.checked  : true,
+        }));
+        const modal = document.getElementById('modal-config');
+        if (modal) modal.close();
+        if (window.API && API.utils) API.utils.mostrarToast('Configurações salvas!', 'success');
     };
 })();

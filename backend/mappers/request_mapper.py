@@ -1,7 +1,7 @@
 """
 Request Mapper - Converte dados HTTP para modelos internos do núcleo
 """
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from datetime import datetime
 from core.models.publication import Publication
 from core.models.platform import Platform

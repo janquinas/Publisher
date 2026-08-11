@@ -3,7 +3,6 @@ Media Manager - Gerenciamento de arquivos de mídia
 """
 import os
 from typing import Optional, Dict, Any
-from datetime import datetime
 from ..models.media import Media
 from ..config import ALLOWED_VIDEO_EXTENSIONS, MAX_VIDEO_SIZE_MB
 from .log_manager import get_log_manager

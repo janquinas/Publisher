@@ -2,8 +2,8 @@
 Analytics Controller - Endpoints para dados estatisticos
 """
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any, List
-from datetime import datetime, timedelta
+from typing import Dict, Any
+from datetime import datetime
 
 from backend.auth import get_current_session
 from backend.core_integration import get_core_integration

@@ -170,7 +170,6 @@ def test_robustez():
         "backend/controllers/analytics_controller.py",
         "backend/controllers/auth_controller.py",
         "backend/controllers/health_controller.py",
-        "backend/controllers/home_controller.py"
     ]
     
     for controller in controllers:
@@ -185,7 +184,6 @@ def test_robustez():
         "frontend/analytics.html",
         "frontend/conexoes.html",
         "frontend/js/api_client.js",
-        "frontend/js/ux.js"
     ]
     
     for file in frontend_files:

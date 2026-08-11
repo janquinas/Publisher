@@ -2,7 +2,6 @@
 Configuração do Backend
 """
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 
 class Settings(BaseSettings):
@@ -31,7 +30,10 @@ class Settings(BaseSettings):
         AVISO: usar '*' com CORS_CREDENTIALS=True é inválido pelo spec do CORS
         e causa erro no browser. Em produção, defina o domínio real.
         """
-        if self.CORS_ORIGINS.strip() == "*":
+        origins = self.CORS_ORIGINS.strip()
+        if not origins:
+            return ["http://localhost:8000"]
+        if origins == "*":
             if self.CORS_CREDENTIALS:
                 import logging
                 logging.getLogger("backend.config").warning(
@@ -39,7 +41,7 @@ class Settings(BaseSettings):
                     "Defina CORS_ORIGINS com o domínio real (ex: https://seudominio.com)."
                 )
             return ["*"]
-        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+        return [o.strip() for o in origins.split(",") if o.strip()]
 
     @property
     def cors_methods_list(self) -> list:

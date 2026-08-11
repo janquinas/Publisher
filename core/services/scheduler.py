@@ -5,7 +5,6 @@ from typing import Dict, List, Optional, Callable
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.date import DateTrigger
-from ..models.schedule import Schedule
 from .log_manager import get_log_manager
 
 

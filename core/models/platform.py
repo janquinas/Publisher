@@ -2,7 +2,7 @@
 Modelo de Plataforma
 """
 from pydantic import BaseModel, Field
-from typing import Dict, Optional
+from typing import Dict
 
 
 class Platform(BaseModel):

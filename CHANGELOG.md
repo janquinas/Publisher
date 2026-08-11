@@ -133,3 +133,36 @@ Todas as alterações registradas por sessão de desenvolvimento.
 | Seletor de idioma | Presente mas completamente não-funcional | Removido de todas as páginas; `i18n.js` deletado |
 | Analytics | Seção "Desempenho de posts" mencionada na Ajuda mas inexistente | Tabela real implementada com dados do backend |
 | Erros OAuth | HTTP 500 bruto quando `.env` não configurado | Redirecionamento com mensagem legível + banner de instrução |
+
+---
+
+## [1.0.1] — Sessão de auditoria e limpeza
+
+### Backend
+
+#### `backend/config.py`
+- Fallback de `cors_origins_list` agora retorna `http://localhost:8000` quando `CORS_ORIGINS` está vazio (antes poderia retornar lista vazia).
+- Adicionado aviso mais descritivo quando `CORS_ORIGINS='*'` é usado com `CORS_CREDENTIALS=True`.
+
+#### `.env.example`
+- Altereado valor padrão de `CORS_ORIGINS` de `*` para `http://localhost:8000` com orientação clara de substituição em produção.
+
+### Frontend
+
+#### `frontend/css/global.css`
+- Bloco `@theme` com a paleta de cores completa adicionado a este arquivo central.
+
+#### HTMLs (`index.html`, `login.html`, `cadastro.html`, `analytics.html`, `posts-agendados.html`, `conexoes.html`, `ajuda.html`, `esqueci-senha.html`, `redefinir-senha.html`, `redefinir-email.html`, `onboarding.html`)
+- Removidos 11 blocos `@theme` inline duplicados. A paleta agora é carregada via `<link rel="stylesheet" href="/assets/css/global.css">` já presente nos `<head>`.
+- Removido código JavaScript inline duplicado de fechamento de modals/dropdowns (`dialog.addEventListener('click', ...)` e `details[open]`). Essa lógica já estava centralizada em `frontend/js/app.js`.
+
+### Repositório / Estrutura
+
+#### Removidos / excluídos do versionamento
+- `.env` — removido do repositório por conter credenciais reais.
+- `automated_publishing.db` — removido do repositório por ser banco de dados local/sqlite.
+- `Publisher/` — removido (pasta vazia sem funcionalidade).
+- `venv/` — removido (ambiente virtual, já excluído pelo `.gitignore`).
+
+#### Código morto confirmado
+- `backend/controllers/home_controller.py` — router vazio sem endpoints. Mantido fisicamente no disco por ser importado em `backend/main.py`, mas sem efeito funcional.

@@ -6,19 +6,17 @@ Fluxo OAuth por plataforma:
   GET /api/platforms/{name}/oauth/start   → redireciona para a URL de autorizacao da rede
   GET /api/platforms/{name}/oauth/callback → recebe o code, troca por token e salva no banco
 """
-from fastapi import APIRouter, HTTPException, Depends, status, Request
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 import os
 import json
-import secrets
 import urllib.parse
 import httpx
 
 from backend.auth import get_current_session
 from backend.core_integration import get_core_integration
-from backend.mappers.response_mapper import ResponseMapper
 from core.database.config import get_db, SessionLocal
 
 router = APIRouter()

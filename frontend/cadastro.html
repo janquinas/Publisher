@@ -10,32 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="/assets/css/global.css">
 
-    <!-- Paleta -->
-    <style type="text/tailwindcss">
-      @theme {
-        --color-brand-50:  #FCE9EB;
-        --color-brand-100: #F7CFD4;
-        --color-brand-200: #EFA3AC;
-        --color-brand-300: #E3707D;
-        --color-brand-400: #D93D51;
-        --color-brand-500: #CB0A0A; /* accent vivo */
-        --color-brand-600: #A80E12;
-        --color-brand-700: #900D0D; /* maroon */
-        --color-brand-800: #880D1E; /* wine */
-        --color-brand-900: #5C0A14; /* quase preto-vinho */
-
-        --color-neutral-50:  #FAF8F8;
-        --color-neutral-100: #F2EFEF;
-        --color-neutral-200: #E8E8E8;
-        --color-neutral-400: #B9B4B4;
-        --color-neutral-500: #8A8585;
-        --color-neutral-700: #4A4444;
-        --color-neutral-900: #1A1616;
-
-        --color-ink: #000000;
-        --font-sans: Inter, system-ui, sans-serif;
-      }
-    </style>
+    <!-- Paleta centralizada em /assets/css/global.css -->
 </head>
 
 <body class="min-h-screen bg-neutral-50 text-neutral-900 font-sans flex items-center justify-center p-6">
@@ -313,20 +288,6 @@
             btn.classList.remove('opacity-75', 'cursor-not-allowed');
         }
 
-        function persistirAuth(data) {
-            var user = data.user || {};
-            localStorage.setItem('auth_token', data.token || '');
-            localStorage.setItem('auth_name',  user.name  || '');
-            localStorage.setItem('auth_email', user.email || '');
-            // Foto: so armazena se vier preenchida (cadastro por email nao tem foto)
-            if (user.profile_photo) {
-                localStorage.setItem('auth_photo', user.profile_photo);
-            } else {
-                localStorage.removeItem('auth_photo');
-            }
-            localStorage.setItem('auth_user', JSON.stringify(user));
-        }
-
         // Processar cadastro
         async function processarCadastro(event) {
             event.preventDefault();
@@ -382,23 +343,6 @@
                 document.body.style.overflow = 'auto';
             }
         }
-
-        // Fechar modal ao clicar fora
-        document.querySelectorAll('dialog').forEach(dialog => {
-            dialog.addEventListener('click', (e) => {
-                if (e.target === dialog) {
-                    dialog.close();
-                    document.body.style.overflow = 'auto';
-                }
-            });
-        });
-
-        // Fechar dropdowns ao clicar fora (Suporte e hamburguer)
-        document.addEventListener('click', function (e) {
-            document.querySelectorAll('details[open]').forEach(function (d) {
-                if (!d.contains(e.target)) d.removeAttribute('open');
-            });
-        });
 
         // Adicionar event listener ao formulário
         document.getElementById('cadastro-form').addEventListener('submit', processarCadastro);

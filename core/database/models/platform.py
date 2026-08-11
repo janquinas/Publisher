@@ -2,7 +2,6 @@
 Modelo de Plataforma do Banco de Dados
 """
 from sqlalchemy import Column, String, Text, DateTime, Boolean
-from sqlalchemy.orm import relationship
 import uuid
 from datetime import datetime
 from core.database.config import Base
