@@ -87,7 +87,8 @@ def init_db():
         ResultDB,
         LogDB,
         PlatformDB,
-        UserDB
+        UserDB,
+        SessionDB,
     )
     Base.metadata.create_all(bind=engine)
 
@@ -95,54 +96,47 @@ def init_db():
     # Necessário para bancos SQLite existentes criados antes desta coluna ser adicionada
     try:
         with engine.connect() as conn:
+            sa = __import__("sqlalchemy")
+
             # Verificar se a coluna já existe
             if DATABASE_URL.startswith("sqlite"):
-                result = conn.execute(
-                    __import__("sqlalchemy").text("PRAGMA table_info(publications)")
-                )
+                # --- publications ---
+                result = conn.execute(sa.text("PRAGMA table_info(publications)"))
                 columns = [row[1] for row in result]
                 if "platforms" not in columns:
-                    conn.execute(
-                        __import__("sqlalchemy").text(
-                            "ALTER TABLE publications ADD COLUMN platforms TEXT DEFAULT '[]'"
-                        )
-                    )
+                    conn.execute(sa.text("ALTER TABLE publications ADD COLUMN platforms TEXT DEFAULT '[]'"))
                     conn.commit()
                 if "is_media_only" not in columns:
-                    conn.execute(
-                        __import__("sqlalchemy").text(
-                            "ALTER TABLE publications ADD COLUMN is_media_only INTEGER NOT NULL DEFAULT 0"
-                        )
-                    )
+                    conn.execute(sa.text("ALTER TABLE publications ADD COLUMN is_media_only INTEGER NOT NULL DEFAULT 0"))
                     conn.commit()
+
+                # --- users: novos campos de email_change ---
+                result = conn.execute(sa.text("PRAGMA table_info(users)"))
+                user_cols = [row[1] for row in result]
+                if "email_change_token" not in user_cols:
+                    # SQLite não suporta UNIQUE em ALTER TABLE — adicionamos sem constraint
+                    conn.execute(sa.text("ALTER TABLE users ADD COLUMN email_change_token TEXT"))
+                    conn.commit()
+                if "email_change_expires_at" not in user_cols:
+                    conn.execute(sa.text("ALTER TABLE users ADD COLUMN email_change_expires_at DATETIME"))
+                    conn.commit()
+
             else:
                 # PostgreSQL / outros — usar information_schema
-                result = conn.execute(
-                    __import__("sqlalchemy").text(
-                        "SELECT column_name FROM information_schema.columns "
-                        "WHERE table_name='publications' AND column_name='platforms'"
-                    )
-                )
-                if not result.fetchone():
-                    conn.execute(
-                        __import__("sqlalchemy").text(
-                            "ALTER TABLE publications ADD COLUMN platforms TEXT DEFAULT '[]'"
-                        )
-                    )
-                    conn.commit()
-                result2 = conn.execute(
-                    __import__("sqlalchemy").text(
-                        "SELECT column_name FROM information_schema.columns "
-                        "WHERE table_name='publications' AND column_name='is_media_only'"
-                    )
-                )
-                if not result2.fetchone():
-                    conn.execute(
-                        __import__("sqlalchemy").text(
-                            "ALTER TABLE publications ADD COLUMN is_media_only BOOLEAN NOT NULL DEFAULT FALSE"
-                        )
-                    )
-                    conn.commit()
+                def _add_col_if_missing(table, column, col_type):
+                    r = conn.execute(sa.text(
+                        f"SELECT column_name FROM information_schema.columns "
+                        f"WHERE table_name='{table}' AND column_name='{column}'"
+                    ))
+                    if not r.fetchone():
+                        conn.execute(sa.text(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}"))
+                        conn.commit()
+
+                _add_col_if_missing("publications", "platforms", "TEXT DEFAULT '[]'")
+                _add_col_if_missing("publications", "is_media_only", "BOOLEAN NOT NULL DEFAULT FALSE")
+                _add_col_if_missing("users", "email_change_token", "VARCHAR(128)")
+                _add_col_if_missing("users", "email_change_expires_at", "TIMESTAMP")
+
     except Exception:
         pass  # Se a tabela ainda não existir, create_all acima a cria com a coluna
 

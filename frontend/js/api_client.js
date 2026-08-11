@@ -77,6 +77,7 @@ const AuthAPI = {
         return apiRequest('/auth/confirm-email-change', 'POST', { token: token, new_email: newEmail });
     },
     async updatePhoto(photo) { return apiRequest('/auth/update-photo', 'POST', { photo: photo }); },
+    async updateProfile(name) { return apiRequest('/auth/update-profile', 'POST', { name: name }); },
     getToken: getToken, setToken: setToken, clearToken: clearToken,
 };
 

@@ -102,7 +102,7 @@
                                 class="w-full text-left block px-4 py-2.5 text-neutral-700 hover:bg-neutral-100">Configurações</button>
                         <a href="conexoes.html" class="block px-4 py-2.5 text-neutral-700 hover:bg-neutral-100">Contas conectadas</a>
                         <hr class="my-1 border-neutral-200" />
-                        <a href="login.html?logout=true" class="block px-4 py-2.5 text-brand-700 hover:bg-neutral-100">Sair</a>
+                        <a href="#" onclick="realizarLogout(); return false;" class="block px-4 py-2.5 text-brand-700 hover:bg-neutral-100">Sair</a>
                     </div>
                 </details>
             </div>
@@ -156,7 +156,7 @@
 
             <div class="flex items-center gap-4">
                 <div class="relative">
-                    <img id="profile-photo" src="https://i.pravatar.cc/150?img=11" alt="Foto de perfil" class="w-16 h-16 rounded-full object-cover border-2 border-brand-200">
+                    <img id="profile-photo" src="" alt="Foto de perfil" class="w-16 h-16 rounded-full object-cover border-2 border-brand-200">
                     <button type="button" onclick="document.getElementById('profile-photo-input').click()" class="absolute -bottom-1 -right-1 w-6 h-6 bg-brand-800 text-white rounded-full flex items-center justify-center hover:bg-brand-700 transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
@@ -296,23 +296,6 @@
                        class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-xs font-medium text-neutral-500">Repetir</label>
-                    <select id="novo-loop" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
-                        <option value="0">Nunca</option>
-                        <option value="1">Diariamente</option>
-                        <option value="7">Semanalmente</option>
-                        <option value="30">Mensalmente</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs font-medium text-neutral-500">Até quando (opcional)</label>
-                    <input type="date" id="novo-data-fim"
-                           class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                </div>
-            </div>
-
             <div class="flex justify-end gap-3 pt-2">
                 <button type="button" onclick="document.getElementById('modal-novo').close()"
                         class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
@@ -379,23 +362,6 @@
                        class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-xs font-medium text-neutral-500">Repetir</label>
-                    <select id="edit-loop" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
-                        <option value="0">Nunca</option>
-                        <option value="1">Diariamente</option>
-                        <option value="7">Semanalmente</option>
-                        <option value="30">Mensalmente</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs font-medium text-neutral-500">Até quando (opcional)</label>
-                    <input type="date" id="edit-data-fim"
-                           class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
-                </div>
-            </div>
-
             <div class="flex justify-end gap-3 pt-2">
                 <button type="button" onclick="document.getElementById('modal-editar').close()"
                         class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
@@ -452,6 +418,7 @@
         }
 
         // ── Configurações ─────────────────────────────────────────────────────
+        // carregarConfiguracoes() e salvarConfiguracoes() estão centralizadas em app.js
 
         // Carregar agendamentos — usa GET /api/publications/ (mesmo endpoint de criação)
         async function carregarAgendamentos() {
@@ -572,8 +539,6 @@
             const agora = new Date();
             agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
             document.getElementById('novo-data-hora').value = agora.toISOString().slice(0, 16);
-            document.getElementById('novo-loop').value = '0';
-            document.getElementById('novo-data-fim').value = '';
             // Carregar biblioteca de mídia no seletor (não bloqueia abertura do modal se falhar)
             try {
                 await carregarMidiaNoSeletor('novo-media-id');

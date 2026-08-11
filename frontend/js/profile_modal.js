@@ -83,6 +83,7 @@
 
     /**
      * Salva nome e, se a foto foi alterada, envia para o backend.
+     * Persiste AMBOS (nome e foto) no banco via API.
      * So executa persistencia ao clicar explicitamente em "Salvar".
      */
     window.salvarPerfil = async function () {
@@ -93,8 +94,13 @@
                 await API.Auth.updatePhoto(_fotoTemp);
                 localStorage.setItem('auth_photo', _fotoTemp);
             }
-            // Nome
-            if (nome) localStorage.setItem('auth_name', nome);
+            // Nome: persiste no banco e atualiza localStorage
+            if (nome && nome !== _inicial.nome) {
+                await API.Base.request('/auth/update-profile', 'POST', { name: nome });
+                localStorage.setItem('auth_name', nome);
+            } else if (nome) {
+                localStorage.setItem('auth_name', nome);
+            }
 
             API.utils.mostrarToast('Perfil salvo com sucesso.', 'success');
             document.getElementById('modal-perfil').close();

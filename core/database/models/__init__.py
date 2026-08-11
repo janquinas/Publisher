@@ -5,6 +5,7 @@ from .result import ResultDB
 from .log import LogDB
 from .platform import PlatformDB
 from .user import UserDB
+from .session import SessionDB
 
 __all__ = [
     'PublicationDB',
@@ -12,5 +13,6 @@ __all__ = [
     'ResultDB',
     'LogDB',
     'PlatformDB',
-    'UserDB'
+    'UserDB',
+    'SessionDB',
 ]

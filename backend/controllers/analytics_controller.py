@@ -20,7 +20,7 @@ async def get_overview(db=Depends(get_db), session: Dict = Depends(get_current_s
         db_integration = core.get_database_integration()
 
         publications  = db_integration.publication_repo.get_all()
-        all_results   = db_integration.result_repo.get_all() if hasattr(db_integration.result_repo, "get_all") else []
+        all_results   = db_integration.result_repo.get_all()
 
         total_publications = len(publications)
         total_results      = len(all_results)
@@ -34,8 +34,7 @@ async def get_overview(db=Depends(get_db), session: Dict = Depends(get_current_s
         # Agendamentos pendentes
         pending_schedules = 0
         try:
-            schedules = db_integration.schedule_repo.get_all() if hasattr(db_integration.schedule_repo, "get_all") else []
-            pending_schedules = sum(1 for s in schedules if s.status == "pending")
+            pending_schedules = len(db_integration.schedule_repo.get_pending_schedules())
         except Exception:
             pass
 
@@ -59,7 +58,7 @@ async def get_by_platform(db=Depends(get_db), session: Dict = Depends(get_curren
     try:
         core = get_core_integration(db)
         db_integration = core.get_database_integration()
-        all_results = db_integration.result_repo.get_all() if hasattr(db_integration.result_repo, "get_all") else []
+        all_results = db_integration.result_repo.get_all()
 
         platform_stats: Dict[str, Any] = {}
         for result in all_results:
@@ -134,7 +133,7 @@ async def get_success_rate(db=Depends(get_db), session: Dict = Depends(get_curre
     try:
         core = get_core_integration(db)
         db_integration = core.get_database_integration()
-        all_results = db_integration.result_repo.get_all() if hasattr(db_integration.result_repo, "get_all") else []
+        all_results = db_integration.result_repo.get_all()
 
         total      = len(all_results)
         successful = sum(1 for r in all_results if r.success)

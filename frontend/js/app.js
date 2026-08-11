@@ -1,11 +1,12 @@
 /* app.js - Logica compartilhada: autenticacao, header, modais, suporte */
 (function () {
     'use strict';
-    const TOKEN_KEY = 'auth_token';
-
-    function getToken() { return localStorage.getItem(TOKEN_KEY) || ''; }
-    function setToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
-    function clearToken() { localStorage.removeItem(TOKEN_KEY); }
+    // getToken / setToken / clearToken são definidos em api_client.js (carregado antes).
+    // Reutilizamos as mesmas funções para evitar duplicação e garantir
+    // que TOKEN_KEY seja sempre 'auth_token' em um único lugar.
+    var getToken   = window.getToken   || function () { return localStorage.getItem('auth_token') || ''; };
+    var setToken   = window.setToken   || function (t) { if (t) localStorage.setItem('auth_token', t); else localStorage.removeItem('auth_token'); };
+    var clearToken = window.clearToken || function () { localStorage.removeItem('auth_token'); };
 
     // Salva estado do usuario no localStorage (usado por google/login)
     function persistUser(token, user) {
@@ -162,6 +163,11 @@
             if (btn) btn.onclick = async function () {
                 try { await API.Auth.logout(); } catch (e) { /* ignora */ }
                 clearToken();
+                localStorage.removeItem('auth_name');
+                localStorage.removeItem('auth_email');
+                localStorage.removeItem('auth_photo');
+                localStorage.removeItem('auth_id');
+                localStorage.removeItem('auth_user');
                 window.location.href = 'login.html?logout=true';
             };
         },
@@ -220,6 +226,18 @@
 
     // Retrocompatibilidade: login.html e cadastro.html chamam persistirAuth() no escopo global
     window.persistirAuth = persistirAuth;
+
+    // Função global de logout — usada pelos botões "Sair" em todos os HTMLs
+    window.realizarLogout = async function () {
+        try { await API.Auth.logout(); } catch (e) { /* ignora erros de rede */ }
+        clearToken();
+        localStorage.removeItem('auth_name');
+        localStorage.removeItem('auth_email');
+        localStorage.removeItem('auth_photo');
+        localStorage.removeItem('auth_id');
+        localStorage.removeItem('auth_user');
+        window.location.href = 'login.html?logout=true';
+    };
 
     // ---------------------------------------------------------------------
     // Configuracoes do usuario — centralizadas (antes duplicadas em 5 HTMLs)

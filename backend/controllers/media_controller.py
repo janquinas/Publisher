@@ -13,11 +13,13 @@ from backend.auth import get_current_session
 from core.database.config import get_db
 from core.database.repositories.publication_repository import PublicationRepository
 from core.database.repositories.schedule_repository import ScheduleRepository
+from core.config import ALLOWED_VIDEO_EXTENSIONS as _ALLOWED_EXT, MAX_VIDEO_SIZE_MB as _MAX_SIZE_MB
 
 router = APIRouter()
 
 UPLOAD_DIR = os.path.join("backend", "static", "uploads")
-ALLOWED_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+# Usa as constantes canônicas de core/config.py
+ALLOWED_EXTENSIONS = {ext if ext.startswith(".") else f".{ext}" for ext in _ALLOWED_EXT}
 
 
 class MediaListResponse(BaseModel):

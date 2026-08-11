@@ -16,8 +16,15 @@ class UserDB(Base):
     email = Column(String(200), nullable=False, unique=True)
     password_hash = Column(String(200), nullable=False)
     profile_photo = Column(Text, nullable=True)
+
+    # Campos para recuperação de senha
     reset_token = Column(String(128), nullable=True, unique=True)
     reset_expires_at = Column(DateTime, nullable=True)
+
+    # Campos para alteração de e-mail (separados do reset_token para evitar conflito)
+    email_change_token = Column(String(128), nullable=True, unique=True)
+    email_change_expires_at = Column(DateTime, nullable=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

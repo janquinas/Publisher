@@ -114,27 +114,27 @@ async def list_platforms(db=Depends(get_db), session: Dict = Depends(get_current
         raise HTTPException(status_code=500, detail=f"Erro ao listar plataformas: {str(e)}")
 
 
-def _enrich_meta_credentials(credentials: dict, platform_name: str):
+async def _enrich_meta_credentials(credentials: dict, platform_name: str):
     """
     Após o token exchange do Facebook/Instagram, busca automaticamente
     o page_id e o ig_user_id (Instagram Professional Account ID)
     associados ao token e os adiciona ao dict de credenciais.
 
-    - Facebook: usa /me/accounts para obter a Page e seu page_access_token de longa duração.
-    - Instagram: usa /{page_id}?fields=instagram_business_account para obter o ig_user_id.
-    """
-    import requests as _req
+    Função async — usa httpx.AsyncClient para não bloquear o event loop.
 
+    - Facebook: usa /me/accounts para obter a Page e seu page_access_token.
+    - Instagram: usa /{page_id}?fields=instagram_business_account para ig_user_id.
+    """
     token   = credentials.get("access_token", "")
     api_ver = "v21.0"
     base    = f"https://graph.facebook.com/{api_ver}"
 
-    # 1. Buscar páginas do usuário
-    pages_resp = _req.get(
-        f"{base}/me/accounts",
-        params={"access_token": token, "fields": "id,name,access_token"},
-        timeout=10,
-    )
+    async with httpx.AsyncClient(timeout=10) as client:
+        pages_resp = await client.get(
+            f"{base}/me/accounts",
+            params={"access_token": token, "fields": "id,name,access_token"},
+        )
+
     if pages_resp.status_code != 200:
         return
 
@@ -142,35 +142,30 @@ def _enrich_meta_credentials(credentials: dict, platform_name: str):
     if not pages:
         return
 
-    # Usar a primeira página (usuário pode ter só uma)
-    page           = pages[0]
-    page_id        = page["id"]
-    page_token     = page.get("access_token", token)
+    page       = pages[0]
+    page_id    = page["id"]
+    page_token = page.get("access_token", token)
 
-    credentials["page_id"]          = page_id
-    credentials["page_name"]        = page.get("name", "")
+    credentials["page_id"]           = page_id
+    credentials["page_name"]         = page.get("name", "")
     credentials["page_access_token"] = page_token
 
-    # Para Instagram: usar o page_access_token para buscar ig_user_id
+    # Para Instagram: buscar ig_user_id via page_access_token
     if platform_name == "instagram":
-        ig_resp = _req.get(
-            f"{base}/{page_id}",
-            params={
-                "fields":       "instagram_business_account",
-                "access_token": page_token,
-            },
-            timeout=10,
-        )
+        async with httpx.AsyncClient(timeout=10) as client:
+            ig_resp = await client.get(
+                f"{base}/{page_id}",
+                params={
+                    "fields":       "instagram_business_account",
+                    "access_token": page_token,
+                },
+            )
         if ig_resp.status_code == 200:
-            ig_data = ig_resp.json()
-            ig_account = ig_data.get("instagram_business_account", {})
+            ig_account = ig_resp.json().get("instagram_business_account", {})
             ig_user_id = ig_account.get("id")
             if ig_user_id:
-                credentials["ig_user_id"]    = ig_user_id
-                credentials["access_token"]  = page_token   # usar o page token para publicar
-        return
-
-    # Para Facebook: o page_access_token já está salvo acima
+                credentials["ig_user_id"]   = ig_user_id
+                credentials["access_token"] = page_token
 
 
 
@@ -244,14 +239,21 @@ async def oauth_start(platform_name: str, token: Optional[str] = None, authoriza
 
     Requer autenticacao via query ?token=... ou header Authorization: Bearer.
     """
-    from backend.auth import _sessions
     from backend.controllers.auth_controller import _token_from_request
+    from core.database.repositories.session_repository import SessionRepository
+    from core.database.config import SessionLocal as _SL
 
     frontend_base = _FRONTEND_BASE()
     conexoes_url  = frontend_base + "/conexoes.html"
 
     tok = _token_from_request(token, authorization)
-    if not (tok and tok in _sessions):
+    _db = _SL()
+    try:
+        _sess_valid = bool(tok and SessionRepository(_db).get_by_token(tok))
+    finally:
+        _db.close()
+
+    if not _sess_valid:
         # Sessão inválida ou expirada → redirecionar para login
         return RedirectResponse(frontend_base + "/login.html?next=" + urllib.parse.quote(conexoes_url))
 
@@ -310,7 +312,8 @@ async def oauth_callback(
     Recebe o callback OAuth da plataforma, troca o code por access_token
     e salva as credenciais no banco de dados.
     """
-    from backend.auth import _sessions
+    from core.database.repositories.session_repository import SessionRepository
+    from core.database.config import SessionLocal as _SL
 
     frontend_base = _FRONTEND_BASE()
     conexoes_url = frontend_base + "/conexoes.html"
@@ -323,7 +326,16 @@ async def oauth_callback(
 
     # Recuperar sessao pelo state
     user_token = urllib.parse.unquote(state or "")
-    if not user_token or user_token not in _sessions:
+    if user_token:
+        _db = _SL()
+        try:
+            _tok_valid = bool(SessionRepository(_db).get_by_token(user_token))
+        finally:
+            _db.close()
+    else:
+        _tok_valid = False
+
+    if not _tok_valid:
         return RedirectResponse(conexoes_url + "?oauth_error=invalid_state")
 
     cfg = _OAUTH_CFG.get(platform_name.lower())
@@ -390,7 +402,7 @@ async def oauth_callback(
     # Para Facebook e Instagram, buscar page_id e ig_user_id após o token exchange
     if platform_name in ("facebook", "instagram"):
         try:
-            _enrich_meta_credentials(credentials, platform_name)
+            await _enrich_meta_credentials(credentials, platform_name)
         except Exception as e:
             # Não bloquear o fluxo — as credenciais parciais já são úteis
             import logging

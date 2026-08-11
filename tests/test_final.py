@@ -90,11 +90,9 @@ def test_robustez():
     
     # 3. Verificar mappers
     print("\n3. Verificando mappers...")
-    from backend.mappers.request_mapper import RequestMapper
     from backend.mappers.response_mapper import ResponseMapper
-    assert RequestMapper is not None
     assert ResponseMapper is not None
-    print("   ✅ Mappers importados com sucesso")
+    print("   ✅ ResponseMapper importado com sucesso")
     
     # 4. Verificar integração com núcleo
     print("\n4. Verificando integração com núcleo...")

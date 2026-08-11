@@ -81,21 +81,25 @@ class KwaiAdapter(BasePlatformAdapter):
                     error_code="AUTH_ERROR"
                 )
             
-            request_data = self.prepare_request(media, title, description, credentials)
-            
-            # Simulação de publicação
-            self.log_info("Simulando upload de vídeo para Kwai", file_path=media.file_path)
-            
-            post_url = "https://www.kwai.com/video/simulated_video_id"
-            
-            self.log_info("Publicação no Kwai realizada com sucesso", post_url=post_url)
-            
+            # Kwai não possui API pública de upload de vídeo.
+            # Esta implementação é um STUB — registra o resultado como sucesso
+            # para fins de teste, mas nenhum vídeo é enviado ao Kwai.
+            # O usuário deve ser informado via mensagem de resultado.
+            self.log_info(
+                "Kwai: publicação simulada (API pública não disponível)",
+                file_path=media.file_path,
+            )
+
             return Result(
                 platform_name="kwai",
                 success=True,
-                message="Vídeo publicado com sucesso no Kwai",
-                post_url=post_url,
-                published_at=datetime.now()
+                message=(
+                    "Kwai: publicação registrada localmente. "
+                    "ATENÇÃO: o Kwai não possui API pública de upload — "
+                    "nenhum vídeo foi enviado. Publique manualmente pelo app."
+                ),
+                post_url=None,
+                published_at=datetime.now(),
             )
             
         except Exception as e:

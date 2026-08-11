@@ -20,6 +20,10 @@ from core.database.config import init_db, dispose_db
 
 def create_app() -> FastAPI:
     """Cria e configura a aplicação FastAPI."""
+    import os as _os
+
+    # Garantir que os diretórios estáticos existam antes do mount
+    _os.makedirs("backend/static/uploads", exist_ok=True)
 
     app = FastAPI(
         title=settings.APP_NAME,

@@ -42,6 +42,11 @@ class CoreIntegration:
         self.publication_service.db_integration = self.db_integration
         self.orchestrator.db_integration = self.db_integration
 
+        # Injetar factory de callbacks seguros para o scheduler.
+        # Cada job agendado abre uma sessão de banco nova e independente,
+        # evitando uso de sessões stale da request original.
+        self.publication_service.scheduled_job_callback_factory = make_scheduled_job_callback
+
         # Registrar adapters de plataforma no orchestrator
         self._register_adapters()
 
@@ -128,3 +133,37 @@ def get_core_integration(db: Session) -> CoreIntegration:
         CoreIntegration: Instância nova para esta request
     """
     return CoreIntegration(db)
+
+
+def make_scheduled_job_callback(publication_id: str):
+    """
+    Retorna uma função de callback segura para uso pelo APScheduler.
+
+    O callback abre uma sessão de banco nova e independente a cada execução,
+    garantindo que jobs agendados nunca dependam de sessões stale de requests
+    antigas. Isso resolve o bug onde a sessão do CoreIntegration da request
+    original já estava fechada quando o job disparava.
+
+    Args:
+        publication_id: ID da publicação a executar
+
+    Returns:
+        Callable sem argumentos, pronto para ser passado ao Scheduler
+    """
+    def _callback():
+        from core.database.config import SessionLocal
+        import logging
+        logger = logging.getLogger("backend.scheduler_callback")
+        db = SessionLocal()
+        try:
+            core = CoreIntegration(db)
+            pub_service = core.get_publication_service()
+            pub_service._execute_scheduled_publication(publication_id)
+        except Exception as exc:
+            logger.error(
+                f"Erro ao executar job agendado para publicação {publication_id}: {exc}"
+            )
+        finally:
+            db.close()
+
+    return _callback

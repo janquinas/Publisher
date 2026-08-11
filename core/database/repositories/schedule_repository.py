@@ -67,15 +67,14 @@ class ScheduleRepository:
         ).all()
     
     def get_pending_schedules(self) -> List[ScheduleDB]:
-        """
-        Busca todos os agendamentos pendentes
-        
-        Returns:
-            Lista de agendamentos pendentes
-        """
+        """Busca todos os agendamentos pendentes."""
         return self.db.query(ScheduleDB).filter(
             ScheduleDB.status == "pending"
         ).all()
+
+    def get_all(self, skip: int = 0, limit: int = 1000) -> List[ScheduleDB]:
+        """Lista todos os agendamentos."""
+        return self.db.query(ScheduleDB).offset(skip).limit(limit).all()
     
     def update_status(self, schedule_id: str, status: str, 
                       executed_at: Optional[datetime] = None) -> Optional[ScheduleDB]:

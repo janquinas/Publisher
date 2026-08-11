@@ -6,6 +6,7 @@ O dicionário self.publications serve apenas como cache em memória
 para publicações criadas na sessão atual (necessário para o scheduler
 e orchestrator que operam sobre objetos Publication em memória).
 """
+import os
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
@@ -42,11 +43,38 @@ class PublicationService:
         # Injetado pelo CoreIntegration após construção
         self.db_integration = None
 
+        # Factory de callbacks para jobs agendados — injetado pelo CoreIntegration.
+        # Quando presente, cada job abre uma sessão de banco nova e independente,
+        # evitando uso de sessões stale da request original.
+        # Assinatura: scheduled_job_callback_factory(publication_id: str) -> Callable
+        self.scheduled_job_callback_factory = None
+
         self.logger.info("Publication Service inicializado")
 
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
+
+    # Diretório base dos uploads — espelha UPLOAD_DIR do media_controller
+    _UPLOAD_DIR = os.path.join("backend", "static", "uploads")
+
+    def _resolve_media_path(self, raw_path: str) -> str:
+        """
+        Garante que o caminho de mídia passado para os adapters seja completo.
+
+        O banco armazena apenas o nome do arquivo (ex: 'abc_video.mp4').
+        Os adapters precisam do caminho relativo completo para abrir o arquivo
+        (ex: 'backend/static/uploads/abc_video.mp4').
+
+        Se o valor já contiver um separador de diretório (caminho completo ou
+        relativo com subpasta), é retornado sem modificação para manter
+        retrocompatibilidade com registros antigos.
+        """
+        if not raw_path:
+            return raw_path
+        if os.sep in raw_path or "/" in raw_path:
+            return raw_path
+        return os.path.join(self._UPLOAD_DIR, raw_path)
 
     def _db_to_publication(self, pub_db) -> Publication:
         """Converte PublicationDB (SQLAlchemy) → Publication (Pydantic)."""
@@ -63,7 +91,7 @@ class PublicationService:
             )
 
         media = Media(
-            file_path=pub_db.media_path or "",
+            file_path=self._resolve_media_path(pub_db.media_path or ""),
             file_size_mb=float(pub_db.media_size_mb or 0),
             format=pub_db.media_format or "mp4",
             duration_seconds=int(pub_db.duration_seconds) if pub_db.duration_seconds else None,
@@ -169,7 +197,7 @@ class PublicationService:
 
             # 3. Montar objeto Publication em memória para o scheduler/orchestrator
             media = Media(
-                file_path=media_path or "",
+                file_path=self._resolve_media_path(media_path or ""),
                 file_size_mb=media_size_mb,
                 format=media_format,
                 duration_seconds=duration_seconds,
@@ -205,10 +233,19 @@ class PublicationService:
 
             # 5. Agendar ou executar imediatamente
             if schedule and scheduled_at:
+                # Usar o factory de callbacks seguros quando disponível.
+                # O factory cria um closure que abre sessão de banco nova a cada
+                # execução, evitando sessões stale da request atual.
+                if self.scheduled_job_callback_factory:
+                    job_callback = self.scheduled_job_callback_factory(publication_id)
+                else:
+                    # Fallback: lambda direta (válida apenas para publish_now/testes)
+                    job_callback = lambda: self._execute_scheduled_publication(publication_id)
+
                 self.scheduler.schedule_publication(
                     publication_id=publication_id,
                     scheduled_at=scheduled_at,
-                    callback=lambda: self._execute_scheduled_publication(publication_id),
+                    callback=job_callback,
                 )
                 self.logger.info(
                     "Publicação agendada",
@@ -321,11 +358,16 @@ class PublicationService:
                     status="pending",
                 )
 
-                # Re-agendar no scheduler
+                # Re-agendar no scheduler usando callback seguro quando disponível
+                if self.scheduled_job_callback_factory:
+                    update_job_callback = self.scheduled_job_callback_factory(publication_id)
+                else:
+                    update_job_callback = lambda: self._execute_scheduled_publication(publication_id)
+
                 self.scheduler.schedule_publication(
                     publication_id=publication_id,
                     scheduled_at=scheduled_at,
-                    callback=lambda: self._execute_scheduled_publication(publication_id),
+                    callback=update_job_callback,
                 )
 
             # 4. Reconstruir objeto Publication e atualizar cache

@@ -18,7 +18,8 @@ class Settings(BaseSettings):
     RELOAD: bool = True
     
     # CORS - aceita string separada por vírgula ou JSON array do .env
-    CORS_ORIGINS: str = "*"
+    # Padrão: localhost:8000 (nunca '*' com credentials=True — browsers rejeitam)
+    CORS_ORIGINS: str = "http://localhost:8000"
     CORS_CREDENTIALS: bool = True
     CORS_METHODS: str = "*"
     CORS_HEADERS: str = "*"
@@ -28,19 +29,20 @@ class Settings(BaseSettings):
         """
         Converte CORS_ORIGINS (str) em lista.
         AVISO: usar '*' com CORS_CREDENTIALS=True é inválido pelo spec do CORS
-        e causa erro no browser. Em produção, defina o domínio real.
+        e causa erro no browser. Em produção, defina o domínio real no .env:
+            CORS_ORIGINS=https://seudominio.com
         """
         origins = self.CORS_ORIGINS.strip()
         if not origins:
             return ["http://localhost:8000"]
         if origins == "*":
-            if self.CORS_CREDENTIALS:
-                import logging
-                logging.getLogger("backend.config").warning(
-                    "CORS_ORIGINS='*' com CORS_CREDENTIALS=True é inválido em produção. "
-                    "Defina CORS_ORIGINS com o domínio real (ex: https://seudominio.com)."
-                )
-            return ["*"]
+            import logging
+            logging.getLogger("backend.config").warning(
+                "CORS_ORIGINS='*' com CORS_CREDENTIALS=True é inválido. "
+                "Defina CORS_ORIGINS com o domínio real (ex: https://seudominio.com)."
+            )
+            # Forçar localhost quando wildcard + credentials para evitar erro silencioso
+            return ["http://localhost:8000"]
         return [o.strip() for o in origins.split(",") if o.strip()]
 
     @property
@@ -57,9 +59,8 @@ class Settings(BaseSettings):
             return ["*"]
         return [h.strip() for h in self.CORS_HEADERS.split(",") if h.strip()]
     
-    # Upload
+    # Upload — tamanho máximo; extensões definidas canonicamente em core/config.py
     MAX_UPLOAD_SIZE: int = 500 * 1024 * 1024  # 500MB
-    ALLOWED_EXTENSIONS: list = [".mp4", ".mov", ".avi", ".mkv", ".webm"]
     
     # Database
     DATABASE_URL: str = "sqlite:///./automated_publishing.db"
