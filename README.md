@@ -1,275 +1,378 @@
 # Automated Publishing Agent
 
-## 📋 Visão Geral
+> Plataforma de automação de publicações em redes sociais.
 
-O **Automated Publishing Agent** é uma plataforma de automação de publicações em redes sociais que permite agendar, gerenciar e publicar conteúdo em múltiplas plataformas (YouTube, Instagram, TikTok, Facebook, Kwai) a partir de uma única interface.
+## 📋 Sobre o Projeto
 
-### Funcionalidades Principais
-- 📅 **Agendamento de publicações** — Agende posts para data e hora específicas
-- 🚀 **Publicação automática** — Conteúdo publicado automaticamente na data marcada
-- 📊 **Analytics integrado** — Acompanhe métricas de desempenho por plataforma
-- 🔗 **Gestão de conexões** — Conecte e desconecte redes sociais
-- 👤 **Autenticação de usuários** — Sistema completo de login e gerenciamento de conta
-- 🔄 **CRUD completo** — Crie, leia, atualize e exclua publicações
-- ⚠️ **Tratamento de erros robusto** — Mensagens claras e estados de loading
+O **Automated Publishing Agent** é uma aplicação web full-stack que permite automatizar publicações em redes sociais. Com ele, você pode:
 
-### Tecnologias Utilizadas
-- **Backend:** Python + FastAPI
-- **Frontend:** HTML5 + Tailwind CSS + JavaScript (Fetch API)
-- **Banco de Dados:** SQLite (desenvolvimento) / PostgreSQL (produção)
-- **Agendamento:** APScheduler
-- **ORM:** SQLAlchemy 2.0
-- **Validação:** Pydantic
-- **Documentação API:** OpenAPI 3.0 (Swagger UI + ReDoc)
+- Agendar posts para multiplas plataformas simultaneamente
+- Gerenciar uma biblioteca de midias (vídeos)
+- Conectar contas via OAuth
+- Publicar imediatamente ou agendar para data/hora específica
+- Acompanhar metricas e status de publicações
 
----
+## ✨ Funcionalidades
 
-## 🚀 Início Rápido
+### 🎥 Biblioteca de Midia
+- Upload de vídeos (`.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`)
+- Armazenamento local seguro com UUID
+- Metadados: título, descricao, tamanho, formato
+- Suporte a agendamento direto da biblioteca
 
-### Pré-requisitos
-- Python 3.10+
-- pip
+### 📅 Agendamento Inteligente
+- Agendamento com data e hora personalizadas
+- Fuso horario configurável
+- Publicacao automatica via **APScheduler**
+- Cancelamento de agendamentos pendentes
 
-### Instalação
+### 🔗 Integracao com Plataformas
+- **Instagram** — Publicacao de vídeos
+- **Facebook** — Paginas e perfis business
+- **YouTube** — Upload de vídeos com OAuth 2.0
+- **TikTok** — Publicacao via Content Posting API
+- **Kwai** — Token manual
+
+### 👤 Autenticacao
+- Login tradicional com e-mail e senha
+- Cadastro de usuarios com validacao
+- Login via **Google OAuth 2.0**
+- Recuperacao de senha por e-mail (SMTP configuravel)
+- Sessoes seguras com tokens
+
+### 📊 Analytics
+- Visao geral de publicacoes
+- Estatisticas por plataforma
+- Taxa de sucesso de publicacoes
+- Atividade recente
+
+## 🚀 Inicio Rapido
+
+> **Dica:** Use os scripts na pasta `iniciar/` para facilitar a inicializacao.
+
+### Pre-requisitos
+
+- **Python 3.10+**
+- **pip**
+- Contas de desenvolvedor nas redes sociais desejadas
+
+### Instalacao
 
 ```bash
-# 1. Clone o repositório
+# 1. Clone o repositorio
 git clone https://github.com/seu-usuario/automated-publishing-agent.git
 cd automated-publishing-agent
 
-# 2. Instale as dependências
+# 2. Crie e ative o ambiente virtual
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/macOS
+
+# 3. Instale as dependencias
 pip install -r requirements.txt
 
-# 3. Configure as variáveis de ambiente
-cp .env.example .env
-# Edite o .env com suas credenciais
+# 4. Configure as variaveis de ambiente
+copy .env.example .env  # Windows
+# cp .env.example .env  # Linux/macOS
+# Preencha o .env com suas credenciais
 
-# 4. Inicialize o banco de dados
+# 5. Inicialize o banco de dados
 python scripts/init_db.py
-
-# 5. Inicie o servidor
-python -m backend.main
 ```
 
-### Execução
+### Execucao
 
 ```bash
-# Desenvolvimento (com reload automático)
+# Desenvolvimento (com reload automatico)
 python -m backend.main
 
-# Produção
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 4
+# Producao com Gunicorn
+gunicorn -c gunicorn.conf.py backend.main:app
 ```
 
-Acesse: http://localhost:8000
+**Ou use os scripts de inicializacao:**
 
----
+```bash
+# Windows - Menu interativo
+iniciar\Iniciar.bat
 
-## 📚 Documentação da API
+# PowerShell
+.\iniciar\start.ps1 dev    # Desenvolvimento
+.\iniciar\start.ps1 prod   # Producao
+.\iniciar\start.ps1 docker # Docker
+```
 
-### Endpoints Disponíveis
+Acesse a aplicacao: http://localhost:8000
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| GET | `/` | Redireciona para o frontend |
-| GET | `/health` | Health check |
-| GET | `/health/detailed` | Health check detalhado |
-| POST | `/api/auth/register` | Cadastrar usuário |
-| POST | `/api/auth/login` | Login |
-| POST | `/api/auth/logout` | Logout |
-| GET | `/api/auth/session` | Verificar sessão |
-| POST | `/api/publications/` | Criar publicação |
-| GET | `/api/publications/` | Listar publicações |
-| GET | `/api/publications/{id}` | Buscar publicação |
-| PUT | `/api/publications/{id}` | Atualizar publicação |
-| DELETE | `/api/publications/{id}` | Excluir publicação |
-| POST | `/api/publications/{id}/publish` | Publicar imediatamente |
-| POST | `/api/publications/{id}/cancel` | Cancelar agendamento |
-| GET | `/api/platforms/` | Listar plataformas |
-| GET | `/api/platforms/{name}/status` | Status da plataforma |
-| POST | `/api/platforms/{name}/connect` | Conectar plataforma |
-| POST | `/api/platforms/{name}/disconnect` | Desconectar plataforma |
-| GET | `/api/analytics/overview` | Visão geral |
-| GET | `/api/analytics/by-platform` | Estatísticas por plataforma |
-| GET | `/api/analytics/success-rate` | Taxa de sucesso |
-| GET | `/api/analytics/recent-activity` | Atividade recente |
+## 📚 Documentacao da API
 
-### Documentação Automática
+A API conta com documentacao automatica gerada pelo FastAPI:
+
 - **Swagger UI:** http://localhost:8000/docs
 - **ReDoc:** http://localhost:8000/redoc
-- **OpenAPI JSON:** http://localhost:8000/openapi.json
 
-### Exemplos de Uso
+### Principais Endpoints
 
-#### Registrar usuário
-```bash
-curl -X POST http://localhost:8000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name": "João Silva", "email": "joao@example.com", "password": "senha123"}'
-```
+| Metodo | Endpoint | Descricao |
+|--------|----------|-----------|
+| `GET` | `/` | Redireciona para o frontend |
+| `GET` | `/health` | Health check |
+| `POST` | `/api/auth/register` | Cadastrar usuario |
+| `POST` | `/api/auth/login` | Login |
+| `POST` | `/api/auth/logout` | Logout |
+| `GET` | `/api/auth/session` | Verificar sessao |
+| `GET` | `/api/auth/google` | Login com Google OAuth |
+| `POST` | `/api/publications/` | Criar publicacao |
+| `GET` | `/api/publications/` | Listar publicacoes |
+| `GET` | `/api/publications/{id}` | Buscar publicacao |
+| `PUT` | `/api/publications/{id}` | Atualizar publicacao |
+| `DELETE` | `/api/publications/{id}` | Excluir publicacao |
+| `POST` | `/api/publications/{id}/publish` | Publicar imediatamente |
+| `POST` | `/api/publications/{id}/cancel` | Cancelar agendamento |
+| `GET` | `/api/platforms/` | Listar plataformas |
+| `GET` | `/api/platforms/{name}/oauth/start` | Iniciar OAuth |
+| `GET` | `/api/platforms/{name}/oauth/callback` | Callback OAuth |
+| `POST` | `/api/platforms/{name}/connect` | Conectar plataforma |
+| `POST` | `/api/platforms/{name}/disconnect` | Desconectar plataforma |
+| `POST` | `/api/media/` | Upload de video |
+| `GET` | `/api/media/` | Listar biblioteca de midia |
+| `GET` | `/api/analytics/overview` | Visao geral |
+| `GET` | `/api/analytics/by-platform` | Estatisticas por plataforma |
 
-#### Login
-```bash
-curl -X POST http://localhost:8000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "joao@example.com", "password": "senha123"}'
-```
-
-#### Criar publicação
-```bash
-curl -X POST http://localhost:8000/api/publications/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Reel — Bastidores do lançamento",
-    "description": "Confira os bastidores do nosso lançamento",
-    "platforms": ["instagram"],
-    "scheduled_at": "2024-12-25T18:00:00"
-  }'
-```
-
-#### Listar publicações
-```bash
-curl http://localhost:8000/api/publications/
-```
-
----
-
-## 🏗️ Arquitetura do Sistema
+## 🏗️ Arquitetura
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    FRONTEND                         │
-│          (HTML + Tailwind + JavaScript)             │
-│                                                     │
-│  Fetch API → api_client.js                          │
+│                    FRONTEND                          │
+│         (HTML5 + Tailwind CSS + JavaScript)          │
 ├─────────────────────────────────────────────────────┤
-│                    BACKEND API                      │
-│                    (FastAPI)                        │
+│                 BACKEND (FastAPI)                     │
 │                                                     │
-│  Controllers → Validators → Mappers                 │
-│       ↓                                             │
-│  Exception Handlers → Response Mapper               │
+│  ┌─────────────┐  ┌──────────────┐  ┌────────────┐ │
+│  │ Controllers │─▶│   Mappers    │─▶│ Validators │ │
+│  └─────────────┘  └──────────────┘  └────────────┘ │
+│         │                │                           │
+│         └────────────────┼───────────────────────────┘ │
+│                          ▼                           │
+│              ┌──────────────────────┐                │
+│              │  Exception Handlers  │                │
+│              └──────────────────────┘                │
+│                          │                           │
 ├─────────────────────────────────────────────────────┤
-│                    NÚCLEO                           │
-│              (Core do Sistema)                      │
+│                   NÚCLEO (Core)                       │
 │                                                     │
-│  PublicationService → Orchestrator → Adapters       │
-│       ↓                                             │
-│  Scheduler → DatabaseIntegration                    │
-├─────────────────────────────────────────────────────┤
-│                 BANCO DE DADOS                      │
-│                (SQLite/PostgreSQL)                  │
+│  ┌─────────────────┐  ┌──────────────────────────┐  │
+│  │ PublicationSvc  │  │      Orchestrator        │  │
+│  └────────┬────────┘  └──────────┬───────────────┘  │
+│           │                      │                   │
+│           │    ┌─────────────────▼────────────┐     │
+│           │    │    Platform Adapters         │     │
+│           │    │ (YouTube, Instagram, TikTok) │     │
+│           │    └──────────────────────────────┘     │
+│           │                      │                   │
+│           ▼                      ▼                   │
+│  ┌─────────────────┐  ┌──────────────────────────┐  │
+│  │    Scheduler    │  │   Database Integration   │  │
+│  │   (APScheduler) │  │   (SQLAlchemy 2.0)       │  │
+│  └─────────────────┘  └──────────────────────────┘  │
 └─────────────────────────────────────────────────────┘
+                          │
+                          ▼
+              ┌──────────────────────┐
+              │   BANCO DE DADOS     │
+              │  SQLite (dev) /      │
+              │  PostgreSQL (prod)   │
+              └──────────────────────┘
 ```
-
-### Componentes Principais
-
-| Componente | Descrição |
-|------------|-----------|
-| **Controllers** | Rotas HTTP (FastAPI) |
-| **Validators** | Validação de dados de entrada |
-| **Mappers** | Conversão entre HTTP e modelos do núcleo |
-| **Exception Handlers** | Tratamento centralizado de erros |
-| **Core Integration** | Ponte entre backend e núcleo |
-| **Publication Service** | Lógica de negócio de publicações |
-| **Scheduler** | Agendamento de publicações |
-| **Orchestrator** | Coordenação de publicações |
-| **Platform Adapters** | Integração com APIs das redes sociais |
-| **Database Integration** | Acesso a dados |
-
----
 
 ## 🧪 Testes
 
 ```bash
-# Testes do backend
-python test_backend.py
+# Testes com pytest
+pytest tests/ -v
 
-# Testes do núcleo
-python test_nucleo.py
-
-# Testes do banco de dados
-python test_database.py
-
-# Testes de integração completa
-python test_unificacao.py
+# Teste especifico
+pytest tests/test_backend.py -v
+pytest tests/test_nucleo.py -v
+pytest tests/test_database.py -v
 ```
 
----
+## ⚙️ Configuracao
 
-## ⚙️ Configuração
+### Variaveis de Ambiente (.env)
 
-### Variáveis de Ambiente (.env)
+O projeto usa variaveis de ambiente para configuracao. Copie o arquivo de exemplo e preencha com suas credenciais:
 
-| Variável | Descrição | Padrão |
-|----------|-----------|--------|
-| `APP_NAME` | Nome da aplicação | Automated Publishing Agent |
-| `APP_VERSION` | Versão | 1.0.0 |
-| `DEBUG` | Modo debug | True |
-| `HOST` | Host do servidor | 0.0.0.0 |
-| `PORT` | Porta do servidor | 8000 |
-| `DATABASE_URL` | URL do banco de dados | sqlite:///./automated_publishing.db |
-| `LOG_LEVEL` | Nível de log | INFO |
+```bash
+copy .env.example .env  # Windows
+```
 
-### Configuração de Plataformas
+**Categorias principais:**
 
-Configure as credenciais de cada plataforma no arquivo `.env`:
-- YouTube: `YOUTUBE_API_KEY`, `YOUTUBE_ACCESS_TOKEN`
-- Instagram: `INSTAGRAM_ACCESS_TOKEN`
-- TikTok: `TIKTOK_ACCESS_TOKEN`
-- Facebook: `FACEBOOK_ACCESS_TOKEN`
-- Kwai: `KWAI_ACCESS_TOKEN`
+| Categoria | Variaveis | Descricao |
+|-----------|-----------|-----------|
+| **Servidor** | `APP_NAME`, `APP_VERSION`, `DEBUG`, `HOST`, `PORT`, `RELOAD` | Configuracao basica do servidor |
+| **CORS** | `CORS_ORIGINS`, `CORS_CREDENTIALS`, `CORS_METHODS`, `CORS_HEADERS` | Controle de acesso cross-origin |
+| **Banco de Dados** | `DATABASE_URL`, `DB_TYPE`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Conexao com banco (SQLite/PostgreSQL) |
+| **Google OAuth** | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | Login com Google |
+| **Redes Sociais** | `INSTAGRAM_*`, `FACEBOOK_*`, `YOUTUBE_*`, `TIKTOK_*`, `KWAI_*` | Credenciais OAuth por plataforma |
+| **SMTP** | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | Envio de e-mails |
+| **Midia** | `ALLOWED_VIDEO_EXTENSIONS`, `MAX_VIDEO_SIZE_MB`, `MAX_UPLOAD_SIZE` | Limites de upload |
 
----
+> ⚠️ **Nunca compartilhe o arquivo `.env`** — ele contem segredos.
+> Use apenas o `.env.example` para documentar as variaveis necessarias.
+
+### Configuracao de Plataformas
+
+Cada plataforma requer credenciais OAuth obtidas em seus respectivos Developer Portals. Consulte o arquivo `docs/guia-api-keys.md` para instrucoes detalhadas.
+
+**Observacoes importantes:**
+- Instagram e Facebook compartilham o mesmo app no Meta for Developers
+- YouTube usa a mesma conta Google do login, mas requer credenciais OAuth separadas
+- Kwai nao possui OAuth publico — use token manual
 
 ## 📁 Estrutura do Projeto
 
 ```
 Automated Publishing Agent/
-├── backend/          # API FastAPI
-├── core/             # Núcleo do sistema
-├── frontend/         # Interface web
-├── docs/             # Documentação
-├── scripts/          # Scripts utilitários
-├── .env.example      # Template de variáveis
-├── requirements.txt  # Dependências
-└── README.md         # Este arquivo
+├── backend/                  # API FastAPI
+│   ├── controllers/          # Rotas HTTP
+│   │   ├── auth_controller.py
+│   │   ├── publication_controller.py
+│   │   ├── platform_controller.py
+│   │   ├── media_controller.py
+│   │   ├── analytics_controller.py
+│   │   └── health_controller.py
+│   ├── validators/           # Validacao de dados
+│   ├── mappers/              # Conversao HTTP ↔ Core
+│   ├── exceptions/           # Exception handlers
+│   ├── main.py               # Ponto de entrada
+│   ├── config.py             # Configuracoes
+│   └── core_integration.py   # Ponte com o nucleo
+│
+├── core/                     # Nucleo do sistema
+│   ├── adapters/             # Adapters por plataforma
+│   ├── services/             # Logica de negocio
+│   ├── database/             # ORM e repositorios
+│   │   ├── models/           # Modelos SQLAlchemy
+│   │   └── repositories/     # Repositorios de dados
+│   └── config.py             # Configuracoes do core
+│
+├── frontend/                 # Interface web
+│   ├── login.html
+│   ├── cadastro.html
+│   ├── analytics.html
+│   ├── conexoes.html
+│   ├── posts-agendados.html
+│   ├── ajuda.html
+│   ├── css/global.css
+│   └── js/
+│       ├── app.js
+│       ├── api_client.js
+│       └── ux.js
+│
+├── scripts/                  # Scripts utilitarios
+│   ├── init_db.py            # Inicializa banco de dados
+│   └── check_credentials.py  # Valida credenciais OAuth
+│
+├── tests/                    # Testes automatizados
+│   ├── test_backend.py
+│   ├── test_nucleo.py
+│   ├── test_database.py
+│   ├── test_auth_flow.py
+│   └── test_final.py
+│
+├── iniciar/                  # Scripts de inicializacao (Windows)
+│   ├── Iniciar.bat           # Menu interativo para iniciar o projeto
+│   └── start.ps1             # Script PowerShell com modos dev/prod/docker
+│
+├── docs/                     # Documentacao adicional
+│   ├── guia-api-keys.md      # Guia de configuracao OAuth
+│   └── technical/            # Documentacao tecnica
+│
+├── .env.example              # Template de variaveis (sem segredos)
+├── requirements.txt          # Dependencias
+├── requirements-prod.txt     # Dependencias de producao
+├── gunicorn.conf.py          # Configuracao Gunicorn
+├── CHANGELOG.md              # Historico de alteracoes
+└── README.md                 # Este arquivo
 ```
-
----
 
 ## 🚢 Deploy
 
-### Produção com Uvicorn
+### Producao com Gunicorn + Uvicorn Workers
 
 ```bash
-# Instalar dependências de produção
-pip install gunicorn
+# Instalar dependencias de producao
+pip install -r requirements.txt -r requirements-prod.txt
 
-# Executar com múltiplos workers
-gunicorn -w 4 -k uvicorn.workers.UvicornWorker backend.main:app
+# Executar com Gunicorn
+gunicorn -c gunicorn.conf.py backend.main:app
 ```
 
-### Docker (futuro)
+### Variaveis Importantes para Producao
+
+```env
+DEBUG=False
+RELOAD=False
+CORS_ORIGINS=https://seudominio.com
+DATABASE_URL=postgresql://user:pass@host:5432/automated_publishing
+BASE_URL=https://seudominio.com
+FRONTEND_URL=https://seudominio.com/app/login.html
+```
+
+### Docker (Exemplo)
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt requirements-prod.txt ./
+RUN pip install -r requirements.txt -r requirements-prod.txt
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "backend.main:app"]
+```
 
 ```bash
+# Build e execucao
 docker build -t automated-publishing-agent .
-docker run -p 8000:8000 automated-publishing-agent
+docker run -p 8000:8000 --env-file .env automated-publishing-agent
 ```
 
----
+## 📄 Licenca
 
-## 📄 Licença
-
-Este projeto está sob desenvolvimento para uso interno.
-
----
+Este projeto esta em desenvolvimento ativo.
 
 ## 📞 Suporte
 
-- **Discord:** [Link do Discord]
-- **E-mail:** suporte@automatedpublishing.com
+- 📝 **Documentacao:** Consulte a pasta `docs/` para guias detalhados
+- 🐛 **Issues:** Abra uma issue no repositorio para reportar bugs
 
 ---
 
-**Status:** ✅ Em desenvolvimento — Fase 4 (Produto Final) concluída
+## 📊 Status do Projeto
+
+**Fase atual:** Fase 4 — Produto Final ✅
+
+### Progresso
+- ✅ Estrutura do repositorio organizada
+- ✅ API REST completa com FastAPI
+- ✅ Frontend funcional com Tailwind CSS
+- ✅ Sistema de autenticacao (Google OAuth + login tradicional)
+- ✅ Upload e gerenciamento de midia
+- ✅ Agendamento com APScheduler
+- ✅ Integracao com 5 plataformas
+- ✅ Analytics e metricas
+- ✅ Testes automatizados
+- ✅ Documentacao da API (Swagger/ReDoc)
+- ✅ Deploy em producao com Gunicorn
+- ✅ Scripts de inicializacao para Windows
+
+---
+
+**Desenvolvido com ❤️ pela equipe da Janqs e do Aatrox**
