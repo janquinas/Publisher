@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBLISHER</title>
+
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="/assets/css/global.css">
+
+    <!-- Paleta -->
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-50:  #FCE9EB;
+        --color-brand-100: #F7CFD4;
+        --color-brand-200: #EFA3AC;
+        --color-brand-300: #E3707D;
+        --color-brand-400: #D93D51;
+        --color-brand-500: #CB0A0A; /* accent vivo */
+        --color-brand-600: #A80E12;
+        --color-brand-700: #900D0D; /* maroon */
+        --color-brand-800: #880D1E; /* wine */
+        --color-brand-900: #5C0A14; /* quase preto-vinho */
+
+        --color-neutral-50:  #FAF8F8;
+        --color-neutral-100: #F2EFEF;
+        --color-neutral-200: #E8E8E8;
+        --color-neutral-400: #B9B4B4;
+        --color-neutral-500: #8A8585;
+        --color-neutral-700: #4A4444;
+        --color-neutral-900: #1A1616;
+
+        --color-ink: #000000;
+        --font-sans: Inter, system-ui, sans-serif;
+      }
+    </style>
+</head>
+
+<body class="min-h-screen bg-neutral-50 text-neutral-900 font-sans flex items-center justify-center p-6">
+
+    <div class="w-full max-w-sm">
+
+        <!-- Logo / marca -->
+        <div class="flex flex-col items-center mb-8">
+            <span class="text-xl font-bold text-neutral-900 tracking-wide">PUBLISHER</span>
+        </div>
+
+        <!-- Card de login -->
+        <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 space-y-5">
+
+            <!-- Aviso de sessão finalizada -->
+            <div id="logout-message" class="hidden items-center gap-2 bg-green-50 border border-green-200 text-green-800 text-sm px-3 py-2.5 rounded-lg">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                </svg>
+                <span>Sessão finalizada com sucesso.</span>
+            </div>
+
+            <div>
+                <h1 class="text-lg font-bold text-neutral-900">Entrar na sua conta</h1>
+                <p class="text-sm text-neutral-500 mt-1">Acesse o painel do Automated Publishing Agent.</p>
+            </div>
+
+            <!-- Alerta de erro (oculto por padrão; exiba removendo 'hidden' quando o backend retornar erro) -->
+            <div id="login-error" class="hidden items-center gap-2 bg-brand-50 border border-brand-200 text-brand-800 text-sm px-3 py-2.5 rounded-lg">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m0 3.75h.008M10.29 3.86 1.82 18a1.5 1.5 0 0 0 1.3 2.25h17.76a1.5 1.5 0 0 0 1.3-2.25L13.71 3.86a1.5 1.5 0 0 0-2.42 0Z"/>
+                </svg>
+                <span id="login-error-message">E-mail ou senha inválidos.</span>
+            </div>
+
+            <form id="login-form" class="space-y-4" novalidate>
+                
+                <!-- Campo Email -->
+                <div>
+                    <label for="email" class="text-xs font-medium text-neutral-500">E-mail</label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           required 
+                           autocomplete="email"
+                           placeholder="voce@exemplo.com"
+                           class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
+                           oninput="validarEmail(this)" />
+                    <p id="email-erro" class="hidden text-xs text-red-600 mt-1"></p>
+                </div>
+
+                <!-- Campo Senha -->
+                <div>
+                    <label for="senha" class="text-xs font-medium text-neutral-500">Senha</label>
+                    <div class="relative mt-1">
+                        <input type="password" 
+                               id="senha" 
+                               name="senha" 
+                               required 
+                               autocomplete="current-password"
+                               placeholder="••••••••"
+                               class="w-full border border-neutral-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                        <button type="button" 
+                                onclick="togglePassword('senha', 'eye-icon-login')"
+                                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700">
+                            <svg id="eye-icon-login" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" name="lembrar" class="accent-brand-700 w-4 h-4" />
+                        <span class="text-sm text-neutral-700">Lembrar de mim</span>
+                    </label>
+                    <a href="esqueci-senha.html" class="text-sm text-brand-700 hover:underline">Esqueceu a senha?</a>
+                </div>
+
+                <button type="submit" 
+                        id="btn-login"
+                        class="w-full bg-brand-800 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-brand-700 transition-colors flex items-center justify-center gap-2">
+                    <span id="btn-login-text">Entrar</span>
+                    <svg id="btn-login-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+
+            <div class="relative py-1">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-neutral-200"></div>
+                </div>
+                <div class="relative flex justify-center text-xs">
+                    <span class="bg-white px-2 text-neutral-400">ou</span>
+                </div>
+            </div>
+
+            <a href="/api/auth/google" class="w-full flex items-center justify-center gap-2 border border-neutral-200 text-neutral-700 text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-neutral-100 transition-colors">
+                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.85A11 11 0 0 0 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.43.34-2.09V7.06H2.18A11 11 0 0 0 1 12c0 1.77.43 3.45 1.18 4.94l3.66-2.85z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 8.02 1 4.55 3.13 2.18 6.31l3.66 2.85C6.71 6.55 9.14 5.38 12 5.38z"/>
+                </svg>
+                Continuar com Google
+            </a>
+
+        </div>
+
+        <p class="text-center text-sm text-neutral-500 mt-6">
+            Não tem uma conta?
+            <a href="cadastro.html" class="font-semibold text-brand-700 hover:underline">Criar conta</a>
+        </p>
+
+    </div>
+
+    <script>
+        // Função para alternar visibilidade da senha
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                // Ícone de olho fechado (senha visível)
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/>';
+            } else {
+                input.type = 'password';
+                // Ícone de olho aberto (senha oculta)
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>';
+            }
+        }
+
+        // Validação de email em tempo real
+        function validarEmail(input) {
+            const erro = document.getElementById('email-erro');
+            const email = input.value;
+            
+            if (email.length === 0) {
+                erro.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+            
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regex.test(email)) {
+                erro.textContent = 'Digite um e-mail válido.';
+                erro.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                erro.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+
+        // Mostrar loading state
+        function mostrarLoading() {
+            const btn = document.getElementById('btn-login');
+            const texto = document.getElementById('btn-login-text');
+            const spinner = document.getElementById('btn-login-spinner');
+            
+            btn.disabled = true;
+            texto.textContent = 'Entrando...';
+            spinner.classList.remove('hidden');
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+        }
+
+        // Esconder loading state
+        function esconderLoading() {
+            const btn = document.getElementById('btn-login');
+            const texto = document.getElementById('btn-login-text');
+            const spinner = document.getElementById('btn-login-spinner');
+            
+            btn.disabled = false;
+            texto.textContent = 'Entrar';
+            spinner.classList.add('hidden');
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+
+        // Mostrar mensagem de erro
+        function mostrarErro(mensagem) {
+            const erro = document.getElementById('login-error');
+            const msg = document.getElementById('login-error-message');
+            msg.textContent = mensagem;
+            erro.classList.remove('hidden');
+            erro.classList.add('flex');
+        }
+
+        // Esconder mensagem de erro
+        function esconderErro() {
+            const erro = document.getElementById('login-error');
+            erro.classList.add('hidden');
+            erro.classList.remove('flex');
+        }
+
+        function persistirAuth(data) {
+            var user = data.user || {};
+            localStorage.setItem('auth_token', data.token || '');
+            localStorage.setItem('auth_name',  user.name  || '');
+            localStorage.setItem('auth_email', user.email || '');
+            // Foto: so armazena se vier preenchida (cadastro por email nao tem foto)
+            if (user.profile_photo) {
+                localStorage.setItem('auth_photo', user.profile_photo);
+            } else {
+                localStorage.removeItem('auth_photo');
+            }
+            localStorage.setItem('auth_user', JSON.stringify(user));
+        }
+
+        // Processar login
+        async function processarLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            
+            if (!email || !senha) {
+                mostrarErro('Preencha todos os campos.');
+                return;
+            }
+            
+            if (!validarEmail(document.getElementById('email'))) {
+                mostrarErro('Digite um e-mail válido.');
+                return;
+            }
+            
+            mostrarLoading();
+            esconderErro();
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: senha })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || 'Erro ao fazer login');
+                persistirAuth(data);
+                window.location.href = 'index.html';
+            } catch (error) {
+                mostrarErro(error.message || 'Erro ao fazer login. Tente novamente.');
+            } finally {
+                esconderLoading();
+            }
+        }
+
+        // Verificar se há parâmetro de logout ou OAuth na URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const oauthToken = urlParams.get('token');
+        if (oauthToken) {
+            persistirAuth({
+                token: oauthToken,
+                user: {
+                    name: urlParams.get('name') || '',
+                    email: urlParams.get('email') || '',
+                    profile_photo: urlParams.get('photo') || ''
+                }
+            });
+            window.history.replaceState({}, document.title, window.location.pathname);
+            window.location.href = 'index.html';
+        }
+
+        if (urlParams.get('logout') === 'true') {
+            const logoutMessage = document.getElementById('logout-message');
+            if (logoutMessage) {
+                logoutMessage.classList.remove('hidden');
+                logoutMessage.classList.add('flex');
+                
+                // Limpar o parametro da URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // Adicionar event listener ao formulário
+        document.getElementById('login-form').addEventListener('submit', processarLogin);
+
+        // Fechar dropdowns ao clicar fora
+        document.addEventListener('click', function (e) {
+            document.querySelectorAll('details[open]').forEach(function (d) {
+                if (!d.contains(e.target)) d.removeAttribute('open');
+            });
+        });
+    </script>
+
+</body>
+</html>

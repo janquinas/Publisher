@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBLISHER — Configurar conexoes</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="/assets/js/api_client.js"></script>
+    <script src="/assets/js/app.js"></script>
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-50:#FCE9EB;--color-brand-100:#F7CFD4;--color-brand-200:#EFA3AC;
+        --color-brand-300:#E3707D;--color-brand-400:#D93D51;--color-brand-500:#CB0A0A;
+        --color-brand-600:#A80E12;--color-brand-700:#900D0D;--color-brand-800:#880D1E;
+        --color-brand-900:#5C0A14;--color-neutral-50:#FAF8F8;--color-neutral-100:#F2EFEF;
+        --color-neutral-200:#E8E8E8;--color-neutral-400:#B9B4B4;--color-neutral-500:#8A8585;
+        --color-neutral-700:#4A4444;--color-neutral-900:#1A1616;
+        --font-sans: Inter, system-ui, sans-serif;
+      }
+    </style>
+</head>
+<body class="min-h-screen bg-neutral-50 text-neutral-900 font-sans flex items-center justify-center p-6">
+
+    <div class="w-full max-w-lg space-y-6">
+
+        <!-- Cabecalho -->
+        <div class="text-center space-y-2">
+            <span class="text-xl font-bold tracking-wide">PUBLISHER</span>
+            <h1 class="text-2xl font-bold text-neutral-900 mt-4">Bem-vindo! Conecte suas redes.</h1>
+            <p class="text-sm text-neutral-500">
+                Para comecar a agendar publicacoes, conecte pelo menos uma rede social.<br>
+                Voce pode adicionar ou remover conexoes a qualquer momento em <strong>Conexoes</strong>.
+            </p>
+        </div>
+
+        <!-- Avatar do usuario -->
+        <div class="flex items-center gap-3 bg-white rounded-2xl border border-neutral-200 px-5 py-4">
+            <img id="user-avatar" src="" alt="Avatar"
+                 class="w-10 h-10 rounded-full object-cover border-2 border-brand-200 shrink-0">
+            <div>
+                <p id="user-name" class="text-sm font-semibold text-neutral-900">Carregando...</p>
+                <p id="user-email" class="text-xs text-neutral-500"></p>
+            </div>
+        </div>
+
+        <!-- Lista de redes -->
+        <div class="bg-white rounded-2xl border border-neutral-200 divide-y divide-neutral-100" id="plataformas-lista">
+            <div class="px-6 py-8 text-center text-neutral-500">Carregando plataformas...</div>
+        </div>
+
+        <!-- Aviso -->
+        <div class="flex items-start gap-3 text-xs text-neutral-500 bg-brand-50 border border-brand-100 rounded-xl px-4 py-3">
+            <svg class="w-4 h-4 text-brand-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Ao conectar, voce sera redirecionado para a autorizacao oficial de cada rede. O Publisher nunca armazena sua senha.</span>
+        </div>
+
+        <!-- Botao continuar -->
+        <button type="button" onclick="continuar()"
+                class="w-full bg-brand-800 text-white text-sm font-semibold px-4 py-3 rounded-xl hover:bg-brand-700 transition-colors">
+            Continuar para o Dashboard
+        </button>
+        <p class="text-center text-xs text-neutral-400">
+            Voce pode conectar as redes depois em <a href="conexoes.html" class="text-brand-700 hover:underline">Conexoes</a>.
+        </p>
+
+    </div>
+
+    <script>
+        // Persistir token recebido via URL (redirect do Google OAuth)
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var token = params.get('token');
+            if (token) {
+                localStorage.setItem('auth_token', token);
+                localStorage.setItem('auth_name',  params.get('name')  || '');
+                localStorage.setItem('auth_email', params.get('email') || '');
+                localStorage.setItem('auth_photo', params.get('photo') || '');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        })();
+
+        // Preencher dados do usuario
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Ler token APÓS o bloco acima ter populado o localStorage
+            var _token = localStorage.getItem('auth_token') || '';
+
+            // Redirecionar para login se não autenticado
+            if (!_token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            var nome  = localStorage.getItem('auth_name')  || 'Usuario';
+            var email = localStorage.getItem('auth_email') || '';
+            var foto  = localStorage.getItem('auth_photo') || '';
+
+            document.getElementById('user-name').textContent  = nome;
+            document.getElementById('user-email').textContent = email;
+            var avatarEl = document.getElementById('user-avatar');
+            avatarEl.src = foto || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(nome) +
+                                    '&background=880D1E&color=fff&size=64');
+
+            await carregarPlataformas(_token);
+
+            // Processar resultado de OAuth recebido (ex: ?oauth_success=instagram)
+            var ps = new URLSearchParams(window.location.search);
+            var ok  = ps.get('oauth_success');
+            var err = ps.get('oauth_error');
+            if (ok)  API.utils.mostrarToast(ok + ' conectado com sucesso!', 'success');
+            if (err) API.utils.mostrarToast('Erro ao conectar: ' + err, 'error');
+        });
+
+        async function carregarPlataformas(_token) {
+            var lista = document.getElementById('plataformas-lista');
+            var plataformas = [
+                { nome: 'Instagram', key: 'instagram', cor: 'linear-gradient(45deg,#F58529,#DD2A7B,#8134AF,#515BD4)',
+                  svg: '<path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465a4.9 4.9 0 0 1 1.771 1.153 4.9 4.9 0 0 1 1.153 1.771c.248.637.415 1.363.465 2.428.05 1.066.06 1.405.06 4.122s-.01 3.056-.06 4.122c-.05 1.065-.217 1.79-.465 2.428a4.9 4.9 0 0 1-1.153 1.771 4.9 4.9 0 0 1-1.771 1.153c-.637.248-1.363.415-2.428.465-1.066.05-1.405.06-4.122.06s-3.056-.01-4.122-.06c-1.065-.05-1.79-.217-2.428-.465a4.9 4.9 0 0 1-1.771-1.153 4.9 4.9 0 0 1-1.153-1.771c-.248-.637-.415-1.363-.465-2.428C2.01 15.056 2 14.717 2 12s.01-3.056.06-4.122c.05-1.065.217-1.79.465-2.428A4.9 4.9 0 0 1 3.678 3.68 4.9 4.9 0 0 1 5.45 2.525c.637-.248 1.363-.415 2.428-.465C8.944 2.01 9.283 2 12 2Zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.25a3.25 3.25 0 1 1 0-6.5 3.25 3.25 0 0 1 0 6.5ZM17.65 6.35a1.17 1.17 0 1 0 0 2.34 1.17 1.17 0 0 0 0-2.34Z"/>' },
+                { nome: 'TikTok', key: 'tiktok', cor: '#000',
+                  svg: '<path d="M16.6 5.82c-.98-.86-1.6-2.06-1.68-3.42h-3.14v13.86c0 1.53-1.24 2.78-2.78 2.78a2.78 2.78 0 0 1 0-5.56c.28 0 .55.04.8.12V10.6a6.02 6.02 0 0 0-.8-.06 5.98 5.98 0 1 0 5.98 5.98V9.36a8.06 8.06 0 0 0 4.62 1.46V7.68a4.85 4.85 0 0 1-3-1.86Z"/>' },
+                { nome: 'YouTube', key: 'youtube', cor: '#FF0000',
+                  svg: '<path d="M21.58 7.2a2.75 2.75 0 0 0-1.94-1.95C17.9 4.75 12 4.75 12 4.75s-5.9 0-7.64.5A2.75 2.75 0 0 0 2.42 7.2 28.7 28.7 0 0 0 2 12a28.7 28.7 0 0 0 .42 4.8 2.75 2.75 0 0 0 1.94 1.95c1.74.5 7.64.5 7.64.5s5.9 0 7.64-.5a2.75 2.75 0 0 0 1.94-1.95A28.7 28.7 0 0 0 22 12a28.7 28.7 0 0 0-.42-4.8ZM9.94 15.02V8.98L15.5 12l-5.56 3.02Z"/>' },
+                { nome: 'Facebook', key: 'facebook', cor: '#1877F2',
+                  svg: '<path d="M13.5 21v-7.7h2.6l.4-3h-3v-1.93c0-.87.24-1.46 1.5-1.46h1.6V4.14A21.6 21.6 0 0 0 14.2 4c-2.3 0-3.9 1.4-3.9 4v2.3H8v3h2.3V21h3.2Z"/>' },
+                { nome: 'Kwai', key: 'kwai', cor: '#FF5700',
+                  svg: '<path d="M4 4h6.5L14 8.5 17.5 4H20l-5.5 7L20 20h-6.5L10 15l-3.5 5H4l5.5-9L4 4Z"/>' },
+            ];
+
+            // Checar status real de cada plataforma
+            var statusMap = {};
+            try {
+                var data = await API.Platform.list();
+                (data.platforms || []).forEach(function (p) { statusMap[p.name] = p.connected; });
+            } catch (e) {}
+
+            lista.innerHTML = plataformas.map(function (p) {
+                var conectado = statusMap[p.key] || false;
+                var badgeCls = conectado
+                    ? 'bg-brand-100 text-brand-700'
+                    : 'bg-neutral-200 text-neutral-700';
+                var badgeTxt = conectado ? 'Conectado' : 'Desconectado';
+                // token lido do localStorage (já populado neste ponto)
+                var tokenAtual = localStorage.getItem('auth_token') || '';
+                var btnHtml = conectado
+                    ? `<button type="button" onclick="desconectar('${p.key}')"
+                              class="text-xs font-medium text-neutral-500 hover:underline">Desconectar</button>`
+                    : `<a href="/api/platforms/${p.key}/oauth/start?token=${encodeURIComponent(tokenAtual)}"
+                          class="text-xs font-semibold text-brand-700 hover:underline">Conectar via OAuth</a>`;
+
+                return `<div class="flex items-center justify-between px-6 py-4" id="row-${p.key}">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                             style="background:${p.cor}">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">${p.svg}</svg>
+                        </div>
+                        <p class="text-sm font-semibold text-neutral-900">${p.nome}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${badgeCls}">${badgeTxt}</span>
+                        ${btnHtml}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function desconectar(key) {
+            try {
+                await API.Platform.disconnect(key);
+                var _token = localStorage.getItem('auth_token') || '';
+                await carregarPlataformas(_token);
+                API.utils.mostrarToast(key + ' desconectado.', 'success');
+            } catch (e) {
+                API.utils.mostrarToast('Erro: ' + e.message, 'error');
+            }
+        }
+
+        function continuar() {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+</body>
+</html>

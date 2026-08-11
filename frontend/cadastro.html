@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBLISHER</title>
+
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="/assets/css/global.css">
+
+    <!-- Paleta -->
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-50:  #FCE9EB;
+        --color-brand-100: #F7CFD4;
+        --color-brand-200: #EFA3AC;
+        --color-brand-300: #E3707D;
+        --color-brand-400: #D93D51;
+        --color-brand-500: #CB0A0A; /* accent vivo */
+        --color-brand-600: #A80E12;
+        --color-brand-700: #900D0D; /* maroon */
+        --color-brand-800: #880D1E; /* wine */
+        --color-brand-900: #5C0A14; /* quase preto-vinho */
+
+        --color-neutral-50:  #FAF8F8;
+        --color-neutral-100: #F2EFEF;
+        --color-neutral-200: #E8E8E8;
+        --color-neutral-400: #B9B4B4;
+        --color-neutral-500: #8A8585;
+        --color-neutral-700: #4A4444;
+        --color-neutral-900: #1A1616;
+
+        --color-ink: #000000;
+        --font-sans: Inter, system-ui, sans-serif;
+      }
+    </style>
+</head>
+
+<body class="min-h-screen bg-neutral-50 text-neutral-900 font-sans flex items-center justify-center p-6">
+
+    <div class="w-full max-w-sm">
+
+        <!-- Logo / marca -->
+        <div class="flex flex-col items-center mb-8">
+            <span class="text-xl font-bold text-neutral-900 tracking-wide">PUBLISHER</span>
+        </div>
+
+        <!-- Card de cadastro -->
+        <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 space-y-5">
+
+            <div>
+                <h1 class="text-lg font-bold text-neutral-900">Criar sua conta</h1>
+                <p class="text-sm text-neutral-500 mt-1">Comece a agendar suas publicações em minutos.</p>
+            </div>
+
+            <!-- Alerta de erro (oculto por padrão) -->
+            <div id="cadastro-error" class="hidden items-center gap-2 bg-brand-50 border border-brand-200 text-brand-800 text-sm px-3 py-2.5 rounded-lg">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m0 3.75h.008M10.29 3.86 1.82 18a1.5 1.5 0 0 0 1.3 2.25h17.76a1.5 1.5 0 0 0 1.3-2.25L13.71 3.86a1.5 1.5 0 0 0-2.42 0Z"/>
+                </svg>
+            <span id="cadastro-error-msg">Nao foi possivel criar a conta. Verifique os dados.</span>
+            </div>
+
+            <form id="cadastro-form" class="space-y-4" novalidate autocomplete="on">
+
+                <div>
+                    <label for="nome" class="text-xs font-medium text-neutral-500">Nome completo</label>
+                    <input type="text" id="nome" name="nome" required autocomplete="name"
+                           placeholder="Seu nome"
+                           class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                </div>
+
+                <div>
+                    <label for="email" class="text-xs font-medium text-neutral-500">E-mail</label>
+                    <input type="email" id="email" name="email" required autocomplete="email"
+                           placeholder="voce@exemplo.com"
+                           class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                </div>
+
+                <div>
+                    <label for="senha" class="text-xs font-medium text-neutral-500">Senha</label>
+                    <div class="relative mt-1">
+                        <input type="password" id="senha" name="senha" required autocomplete="new-password"
+                               minlength="8" placeholder="Mínimo 8 caracteres"
+                               oninput="checarForcaSenha()"
+                               class="w-full border border-neutral-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                        <button type="button" onclick="togglePassword('senha', 'eye-icon-1')"
+                                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700">
+                            <svg id="eye-icon-1" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <!-- Indicador de força da senha -->
+                    <div class="flex gap-1 mt-2">
+                        <div id="forca-1" class="h-1 flex-1 rounded-full bg-neutral-200 transition-colors"></div>
+                        <div id="forca-2" class="h-1 flex-1 rounded-full bg-neutral-200 transition-colors"></div>
+                        <div id="forca-3" class="h-1 flex-1 rounded-full bg-neutral-200 transition-colors"></div>
+                        <div id="forca-4" class="h-1 flex-1 rounded-full bg-neutral-200 transition-colors"></div>
+                    </div>
+                    <p id="forca-label" class="text-xs text-neutral-400 mt-1">Use letras, números e símbolos.</p>
+                </div>
+
+                <div>
+                    <label for="confirmar-senha" class="text-xs font-medium text-neutral-500">Confirmar senha</label>
+                    <div class="relative mt-1">
+                        <input type="password" id="confirmar-senha" name="confirmar_senha" required autocomplete="new-password"
+                               placeholder="Repita a senha"
+                               oninput="validarConfirmacaoSenha()"
+                               class="w-full border border-neutral-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                        <button type="button" onclick="togglePassword('confirmar-senha', 'eye-icon-2')"
+                                class="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700">
+                            <svg id="eye-icon-2" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="confirmacao-erro" class="hidden text-xs text-red-600 mt-1">As senhas não coincidem.</p>
+                </div>
+
+                <label class="flex items-start gap-2">
+                    <input type="checkbox" required class="accent-brand-700 w-4 h-4 mt-0.5" />
+                    <span class="text-sm text-neutral-700">
+                        Concordo com os <a href="#" onclick="abrirModal('modal-termos'); return false;" class="text-brand-700 hover:underline">Termos de Uso</a> e a <a href="#" onclick="abrirModal('modal-privacidade'); return false;" class="text-brand-700 hover:underline">Política de Privacidade</a>
+                    </span>
+                </label>
+
+                <button type="submit" 
+                        id="btn-cadastro"
+                        class="w-full bg-brand-800 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-brand-700 transition-colors flex items-center justify-center gap-2">
+                    <span id="btn-cadastro-text">Criar conta</span>
+                    <svg id="btn-cadastro-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <p class="text-center text-sm text-neutral-500 mt-6">
+            Já tem uma conta?
+            <a href="login.html" class="font-semibold text-brand-700 hover:underline">Entrar</a>
+        </p>
+
+    </div>
+    <!-- ===== Modal: Termos de Uso ===== -->
+    <dialog id="modal-termos" class="rounded-2xl p-0 w-full max-w-2xl backdrop:bg-neutral-900/50">
+        <div class="flex items-center justify-between border-b border-neutral-200 pb-4 mb-4">
+            <h3 class="text-lg font-bold text-neutral-900">Termos de Uso</h3>
+            <button type="button" onclick="fecharModal('modal-termos')" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="space-y-4 text-sm text-neutral-700 max-h-[60vh] overflow-y-auto">
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">1. Aceitação dos Termos</h4>
+                <p>Ao criar uma conta no Automated Publishing Agent, você concorda em cumprir e estar vinculado a estes Termos de Uso.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">2. Descrição do Serviço</h4>
+                <p>Plataforma de agendamento e publicação de conteúdo em redes sociais, oferecendo agendamento, gerenciamento de contas, analytics e automação.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">3. Cadastro e Conta</h4>
+                <p>Você deve fornecer informações verdadeiras, manter a confidencialidade da senha e ser responsável pelas atividades da conta.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">4. Uso Aceitável</h4>
+                <p>Não é permitido publicar conteúdo ilegal, ofensivo ou discriminatório, nem violar direitos de propriedade intelectual ou prejudicar outros usuários.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">5. Privacidade e Dados</h4>
+                <p>Sua privacidade é importante. Os dados são tratados conforme a Política de Privacidade desta plataforma.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">6. Cancelamento</h4>
+                <p>Você pode cancelar a conta a qualquer momento. Reservamo-nos o direito de suspender contas que violem estes termos.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">7. Contato</h4>
+                <p>Para dúvidas, entre em contato pelo e-mail: suporte@publisher.com</p>
+            </div>
+        </div>
+        <button type="button" onclick="fecharModal('modal-termos')" class="w-full bg-brand-800 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-brand-700 transition-colors mt-4">Fechar</button>
+    </dialog>
+
+    <!-- ===== Modal: Política de Privacidade ===== -->
+    <dialog id="modal-privacidade" class="rounded-2xl p-0 w-full max-w-2xl backdrop:bg-neutral-900/50">
+        <div class="flex items-center justify-between border-b border-neutral-200 pb-4 mb-4">
+            <h3 class="text-lg font-bold text-neutral-900">Política de Privacidade</h3>
+            <button type="button" onclick="fecharModal('modal-privacidade')" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="space-y-4 text-sm text-neutral-700 max-h-[60vh] overflow-y-auto">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p class="text-sm text-blue-800">Sua privacidade é fundamental. Saiba como coletamos, usamos e protegemos suas informações.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">1. Informações que Coletamos</h4>
+                <p>Nome, e-mail, senha (criptografada), informações de uso e do dispositivo.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">2. Como Utilizamos</h4>
+                <p>Para fornecer serviços, processar agendamentos, garantir segurança e melhorar a plataforma.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">3. Compartilhamento</h4>
+                <p><strong>Não vendemos seus dados.</strong> Compartilhamos apenas com redes sociais (para publicar) e prestadores de serviços essenciais.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">4. Segurança</h4>
+                <p>Seus dados são armazenados com criptografia e medidas de segurança robustas.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">5. Seus Direitos (LGPD)</h4>
+                <p>Você pode acessar, corrigir, excluir, portar e revogar o consentimento dos seus dados.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-neutral-900 mb-2">6. Contato</h4>
+                <p>Para exercer seus direitos: privacidade@publisher.com</p>
+            </div>
+        </div>
+        <button type="button" onclick="fecharModal('modal-privacidade')" class="w-full bg-brand-800 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-brand-700 transition-colors mt-4">Fechar</button>
+    </dialog>
+
+    <script>
+        // Alternar visibilidade da senha
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/>';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>';
+            }
+        }
+
+        // Validar confirmação de senha em tempo real
+        function validarConfirmacaoSenha() {
+            const senha = document.getElementById('senha').value;
+            const confirmar = document.getElementById('confirmar-senha').value;
+            const erro = document.getElementById('confirmacao-erro');
+            const input = document.getElementById('confirmar-senha');
+
+            if (confirmar.length === 0) {
+                erro.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+            if (senha !== confirmar) {
+                erro.classList.remove('hidden');
+                input.classList.add('border-red-500');
+                return false;
+            } else {
+                erro.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return true;
+            }
+        }
+
+        // Validação de força de senha
+        function checarForcaSenha() {
+            const senha = document.getElementById('senha').value;
+            const barras = [
+                document.getElementById('forca-1'),
+                document.getElementById('forca-2'),
+                document.getElementById('forca-3'),
+                document.getElementById('forca-4'),
+            ];
+            const label = document.getElementById('forca-label');
+
+            let pontuacao = 0;
+            if (senha.length >= 8) pontuacao++;
+            if (/[A-Z]/.test(senha) && /[a-z]/.test(senha)) pontuacao++;
+            if (/[0-9]/.test(senha)) pontuacao++;
+            if (/[^A-Za-z0-9]/.test(senha)) pontuacao++;
+
+            const cores = ['bg-neutral-200', 'bg-red-400', 'bg-yellow-400', 'bg-blue-500', 'bg-green-500'];
+            const textos = ['Use letras, números e símbolos.', 'Fraca', 'Razoável', 'Boa', 'Forte'];
+
+            barras.forEach((barra, i) => {
+                barra.className = 'h-1 flex-1 rounded-full transition-colors ' + (i < pontuacao ? cores[pontuacao] : 'bg-neutral-200');
+            });
+            label.textContent = senha.length === 0 ? 'Use letras, números e símbolos.' : textos[pontuacao];
+        }
+
+        // Mostrar loading state
+        function mostrarLoading() {
+            const btn = document.getElementById('btn-cadastro');
+            const texto = document.getElementById('btn-cadastro-text');
+            const spinner = document.getElementById('btn-cadastro-spinner');
+            btn.disabled = true;
+            texto.textContent = 'Criando conta...';
+            spinner.classList.remove('hidden');
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+        }
+
+        // Esconder loading state
+        function esconderLoading() {
+            const btn = document.getElementById('btn-cadastro');
+            const texto = document.getElementById('btn-cadastro-text');
+            const spinner = document.getElementById('btn-cadastro-spinner');
+            btn.disabled = false;
+            texto.textContent = 'Criar conta';
+            spinner.classList.add('hidden');
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        }
+
+        function persistirAuth(data) {
+            var user = data.user || {};
+            localStorage.setItem('auth_token', data.token || '');
+            localStorage.setItem('auth_name',  user.name  || '');
+            localStorage.setItem('auth_email', user.email || '');
+            // Foto: so armazena se vier preenchida (cadastro por email nao tem foto)
+            if (user.profile_photo) {
+                localStorage.setItem('auth_photo', user.profile_photo);
+            } else {
+                localStorage.removeItem('auth_photo');
+            }
+            localStorage.setItem('auth_user', JSON.stringify(user));
+        }
+
+        // Processar cadastro
+        async function processarCadastro(event) {
+            event.preventDefault();
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const confirmar = document.getElementById('confirmar-senha').value;
+
+            if (!nome || !email || !senha || !confirmar) {
+                alert('Preencha todos os campos.');
+                return;
+            }
+            if (senha !== confirmar) {
+                alert('As senhas não coincidem.');
+                return;
+            }
+            if (senha.length < 8) {
+                alert('A senha deve ter no mínimo 8 caracteres.');
+                return;
+            }
+
+            mostrarLoading();
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nome, email, password: senha })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || 'Erro ao criar conta');
+                persistirAuth(data);
+                window.location.href = 'onboarding.html';
+            } catch (error) {
+                alert(error.message || 'Erro ao criar conta. Tente novamente.');
+            } finally {
+                esconderLoading();
+            }
+        }
+
+        // Funções dos modais de Termos e Privacidade
+        function abrirModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.showModal();
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function fecharModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.close();
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Fechar modal ao clicar fora
+        document.querySelectorAll('dialog').forEach(dialog => {
+            dialog.addEventListener('click', (e) => {
+                if (e.target === dialog) {
+                    dialog.close();
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+
+        // Fechar dropdowns ao clicar fora (Suporte e hamburguer)
+        document.addEventListener('click', function (e) {
+            document.querySelectorAll('details[open]').forEach(function (d) {
+                if (!d.contains(e.target)) d.removeAttribute('open');
+            });
+        });
+
+        // Adicionar event listener ao formulário
+        document.getElementById('cadastro-form').addEventListener('submit', processarCadastro);
+    </script>
+
+</body>
+</html>

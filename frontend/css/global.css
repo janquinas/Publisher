@@ -1,0 +1,67 @@
+/* ===== Estilos globais compartilhados ===== */
+
+/* -------------------------------------------------------
+   MODAIS — centralizacao perfeita em qualquer tela
+   O elemento <dialog> nativo abre no canto superior por
+   padrao em alguns navegadores. As regras abaixo forcam
+   centralização vertical e horizontal garantida.
+------------------------------------------------------- */
+dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;           /* centraliza horizontal e verticalmente */
+  width: 100%;
+  max-width: 90vw;
+  max-height: 88vh;
+  overflow-y: auto;
+  border: none;
+  border-radius: 1rem;
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+dialog[open] {
+  display: block;
+}
+
+/* Backdrop escuro padrao para showModal() */
+dialog::backdrop {
+  background: rgba(17, 17, 17, 0.52);
+}
+
+/* Scroll interno em containers longos dentro de modais */
+dialog .overflow-y-auto,
+dialog [data-scroll] {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+/* -------------------------------------------------------
+   DROPDOWNS (<details>/<summary>)
+   Garante que fiquem sobre outros elementos
+------------------------------------------------------- */
+details[open] > div {
+  z-index: 50;
+}
+
+/* -------------------------------------------------------
+   UTILITARIOS
+------------------------------------------------------- */
+.closed-on-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 17, 17, 0.52);
+}
+
+/* Animacao sutil de entrada para modais */
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);   }
+}
+dialog[open] {
+  animation: modal-in 0.18s ease-out;
+}

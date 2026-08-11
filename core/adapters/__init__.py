@@ -1,0 +1,1 @@
+# Adaptadores de plataforma do núcleo do sistema

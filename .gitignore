@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+
+# Banco de dados (desenvolvimento)
+*.db
+*.sqlite
+*.sqlite3
+
+# Pytest
+.pytest_cache/
+.cache/
+*.pytest_cache/
+
+# Cobertura de testes
+.coverage
+htmlcov/
+coverage.xml
+
+# Variáveis de ambiente (nunca commitar)
+.env
+.env.local
+.env.*.local
+
+# IDEs e editores
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Build / dist
+dist/
+build/
+*.egg-info/
+
+# Uploads de mídia (arquivos grandes do usuário)
+backend/uploads/
+uploads/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Alembic (manter apenas versions/)
+# alembic/versions/*.py  # descomente se quiser ignorar migrations geradas
+
+# Node (se houver algum tooling futuro)
+node_modules/

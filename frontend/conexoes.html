@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBLISHER</title>
+
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- API Client + App -->
+    <script src="/assets/js/api_client.js"></script>
+    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/profile_modal.js"></script>
+    <link rel="stylesheet" href="/assets/css/global.css">
+
+    <!-- Paleta -->
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-50:  #FCE9EB;
+        --color-brand-100: #F7CFD4;
+        --color-brand-200: #EFA3AC;
+        --color-brand-300: #E3707D;
+        --color-brand-400: #D93D51;
+        --color-brand-500: #CB0A0A; /* accent vivo */
+        --color-brand-600: #A80E12;
+        --color-brand-700: #900D0D; /* maroon */
+        --color-brand-800: #880D1E; /* wine */
+        --color-brand-900: #5C0A14; /* quase preto-vinho */
+
+        --color-neutral-50:  #FAF8F8;
+        --color-neutral-100: #F2EFEF;
+        --color-neutral-200: #E8E8E8;
+        --color-neutral-400: #B9B4B4;
+        --color-neutral-500: #8A8585;
+        --color-neutral-700: #4A4444;
+        --color-neutral-900: #1A1616;
+
+        --color-ink: #000000;
+        --font-sans: Inter, system-ui, sans-serif;
+      }
+    </style>
+</head>
+
+<body class="flex min-h-screen bg-neutral-50 text-neutral-900 font-sans">
+
+    <!-- Sidebar -->
+    <aside class="w-64 shrink-0 bg-neutral-100 border-r border-neutral-200 flex flex-col">
+        <div class="px-6 py-6">
+            <span class="font-bold text-neutral-900 tracking-wide">PUBLISHER</span>
+        </div>
+        <nav class="flex-1 px-3 space-y-1">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                Dashboard
+            </a>
+            <a href="posts-agendados.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                Posts agendados
+            </a>
+            <a href="analytics.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                Analytics
+            </a>
+            <a href="conexoes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white text-neutral-900 font-semibold shadow-sm">
+                Conexões
+            </a>
+            <a href="ajuda.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                Ajuda
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Conteúdo principal -->
+    <div class="flex-1 flex flex-col">
+
+        <!-- Header -->
+        <header class="bg-neutral-50 border-b border-neutral-200 px-6 py-4 shadow-sm flex items-center justify-between">
+            <h1 class="text-xl font-bold text-neutral-900">Conexões</h1>
+
+            <div class="flex items-center gap-3">
+                <!-- Botão de Suporte com Dropdown -->
+                <details class="relative">
+                    <summary class="list-none cursor-pointer text-xs font-medium text-neutral-600 hover:text-brand-700 flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 4.18 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                        Suporte
+                    </summary>
+
+                    <div class="absolute right-0 mt-2 w-56 bg-white border border-neutral-200 rounded-xl shadow-lg py-2 text-sm z-10">
+                        <div class="px-3 py-2 border-b border-neutral-200">
+                            <p class="text-xs font-medium text-neutral-500">Escolha um suporte:</p>
+                        </div>
+                        <a href="https://discord.com/channels/@me/644151758859272228" target="_blank" 
+                           class="flex items-center gap-2 px-3 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-neutral-900">Conversar com Janquinas</p>
+                                <p class="text-xs text-neutral-500">Suporte técnico</p>
+                            </div>
+                            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                        <a href="https://discord.com/channels/@me/400121880385683457" target="_blank" 
+                           class="flex items-center gap-2 px-3 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-neutral-900">Conversar com Aatrox</p>
+                                <p class="text-xs text-neutral-500">Suporte técnico</p>
+                            </div>
+                            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                    </div>
+                </details>
+
+                <details class="relative">
+                    <summary class="list-none cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg hover:bg-neutral-200 transition-colors">
+                        <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </summary>
+
+                    <div class="absolute right-0 mt-2 w-52 bg-white border border-neutral-200 rounded-xl shadow-lg py-2 text-sm z-10">
+                        <a href="#" onclick="abrirModalPerfil(); return false;" class="block px-4 py-2.5 text-neutral-700 hover:bg-neutral-100">Perfil</a>
+                        <a href="#" onclick="document.getElementById('modal-config').showModal(); return false;" class="block px-4 py-2.5 text-neutral-700 hover:bg-neutral-100">Configurações</a>
+                        <a href="conexoes.html" class="block px-4 py-2.5 text-neutral-700 hover:bg-neutral-100">Contas conectadas</a>
+                        <hr class="my-1 border-neutral-200" />
+                        <a href="login.html?logout=true" class="block px-4 py-2.5 text-brand-700 hover:bg-neutral-100">Sair</a>
+                    </div>
+                </details>
+            </div>
+        </header>
+
+        <!-- Conteúdo -->
+        <main class="flex-1 p-6">
+            <div class="container mx-auto max-w-3xl space-y-5">
+
+                <p class="text-sm text-neutral-500">
+                    Conecte suas redes sociais para agendar e publicar automaticamente. Você pode conectar mais de uma conta por rede.
+                </p>
+
+                <!-- Lista de redes -->
+                <div class="bg-white rounded-2xl border border-neutral-200 divide-y divide-neutral-100">
+
+                    <!-- Instagram — dinâmico -->
+                    <div class="flex items-center justify-between px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                                 style="background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF,#515BD4)">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465a4.9 4.9 0 0 1 1.771 1.153 4.9 4.9 0 0 1 1.153 1.771c.248.637.415 1.363.465 2.428.05 1.066.06 1.405.06 4.122s-.01 3.056-.06 4.122c-.05 1.065-.217 1.79-.465 2.428a4.9 4.9 0 0 1-1.153 1.771 4.9 4.9 0 0 1-1.771 1.153c-.637.248-1.363.415-2.428.465-1.066.05-1.405.06-4.122.06s-3.056-.01-4.122-.06c-1.065-.05-1.79-.217-2.428-.465a4.9 4.9 0 0 1-1.771-1.153 4.9 4.9 0 0 1-1.153-1.771c-.248-.637-.415-1.363-.465-2.428C2.01 15.056 2 14.717 2 12s.01-3.056.06-4.122c.05-1.065.217-1.79.465-2.428A4.9 4.9 0 0 1 3.678 3.68 4.9 4.9 0 0 1 5.45 2.525c.637-.248 1.363-.415 2.428-.465C8.944 2.01 9.283 2 12 2Zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.25a3.25 3.25 0 1 1 0-6.5 3.25 3.25 0 0 1 0 6.5ZM17.65 6.35a1.17 1.17 0 1 0 0 2.34 1.17 1.17 0 0 0 0-2.34Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-neutral-900">Instagram</p>
+                                <p class="text-xs text-neutral-500" id="desc-instagram">Nenhuma conta conectada</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="badge-instagram" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-neutral-200 text-neutral-700 px-2.5 py-1 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-neutral-500"></span> Desconectado
+                            </span>
+                            <button type="button" id="btn-instagram" onclick="alternarConexao('instagram')"
+                                    class="text-xs font-semibold text-brand-700 hover:underline">Conectar</button>
+                        </div>
+                    </div>
+
+                    <!-- TikTok — dinâmico -->
+                    <div class="flex items-center justify-between px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-neutral-900 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16.6 5.82c-.98-.86-1.6-2.06-1.68-3.42h-3.14v13.86c0 1.53-1.24 2.78-2.78 2.78a2.78 2.78 0 0 1 0-5.56c.28 0 .55.04.8.12V10.6a6.02 6.02 0 0 0-.8-.06 5.98 5.98 0 1 0 5.98 5.98V9.36a8.06 8.06 0 0 0 4.62 1.46V7.68a4.85 4.85 0 0 1-3-1.86Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-neutral-900">TikTok</p>
+                                <p class="text-xs text-neutral-500" id="desc-tiktok">Nenhuma conta conectada</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="badge-tiktok" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-neutral-200 text-neutral-700 px-2.5 py-1 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-neutral-500"></span> Desconectado
+                            </span>
+                            <button type="button" id="btn-tiktok" onclick="alternarConexao('tiktok')"
+                                    class="text-xs font-semibold text-brand-700 hover:underline">Conectar</button>
+                        </div>
+                    </div>
+
+                    <!-- YouTube — desconectado -->
+                    <div class="flex items-center justify-between px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-neutral-200 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-neutral-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M21.58 7.2a2.75 2.75 0 0 0-1.94-1.95C17.9 4.75 12 4.75 12 4.75s-5.9 0-7.64.5A2.75 2.75 0 0 0 2.42 7.2 28.7 28.7 0 0 0 2 12a28.7 28.7 0 0 0 .42 4.8 2.75 2.75 0 0 0 1.94 1.95c1.74.5 7.64.5 7.64.5s5.9 0 7.64-.5a2.75 2.75 0 0 0 1.94-1.95A28.7 28.7 0 0 0 22 12a28.7 28.7 0 0 0-.42-4.8ZM9.94 15.02V8.98L15.5 12l-5.56 3.02Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-neutral-900">YouTube</p>
+                                <p class="text-xs text-neutral-500" id="desc-youtube">Nenhuma conta conectada</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="badge-youtube" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-neutral-200 text-neutral-700 px-2.5 py-1 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-neutral-500"></span> Desconectado
+                            </span>
+                            <button type="button" id="btn-youtube" onclick="alternarConexao('youtube')"
+                                    class="text-xs font-semibold text-brand-700 hover:underline">Conectar</button>
+                        </div>
+                    </div>
+
+                    <!-- Facebook — desconectado -->
+                    <div class="flex items-center justify-between px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-neutral-200 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-neutral-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M13.5 21v-7.7h2.6l.4-3h-3v-1.93c0-.87.24-1.46 1.5-1.46h1.6V4.14A21.6 21.6 0 0 0 14.2 4c-2.3 0-3.9 1.4-3.9 4v2.3H8v3h2.3V21h3.2Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-neutral-900">Facebook</p>
+                                <p class="text-xs text-neutral-500" id="desc-facebook">Nenhuma conta conectada</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="badge-facebook" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-neutral-200 text-neutral-700 px-2.5 py-1 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-neutral-500"></span> Desconectado
+                            </span>
+                            <button type="button" id="btn-facebook" onclick="alternarConexao('facebook')"
+                                    class="text-xs font-semibold text-brand-700 hover:underline">Conectar</button>
+                        </div>
+                    </div>
+
+                    <!-- Kwai — desconectado -->
+                    <div class="flex items-center justify-between px-6 py-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-neutral-200 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 text-neutral-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M4 4h6.5L14 8.5 17.5 4H20l-5.5 7L20 20h-6.5L10 15l-3.5 5H4l5.5-9L4 4Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-neutral-900">Kwai</p>
+                                <p class="text-xs text-neutral-500" id="desc-kwai">Nenhuma conta conectada</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="badge-kwai" class="inline-flex items-center gap-1.5 text-xs font-semibold bg-neutral-200 text-neutral-700 px-2.5 py-1 rounded-full">
+                                <span class="w-1.5 h-1.5 rounded-full bg-neutral-500"></span> Desconectado
+                            </span>
+                            <button type="button" id="btn-kwai" onclick="alternarConexao('kwai')"
+                                    class="text-xs font-semibold text-brand-700 hover:underline">Conectar</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Aviso -->
+                <div class="flex items-start gap-3 bg-white rounded-2xl border border-neutral-200 px-6 py-4">
+                    <svg class="w-5 h-5 text-neutral-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.25 11.25h.008v.008h-.008v-.008ZM12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-.75-6h1.5v.008h-1.5V15Zm0-6.75a.75.75 0 1 1 1.5 0v3.75a.75.75 0 0 1-1.5 0V8.25Z"/>
+                    </svg>
+                    <p class="text-xs text-neutral-500">
+                        Ao conectar, você será redirecionado para a autorização oficial de cada rede social.
+                        O Publisher nunca tem acesso à sua senha — apenas ao token de acesso concedido por você.
+                    </p>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <!-- modais de desconexão removidos — a lógica agora usa alternarConexao() diretamente -->
+
+    <!-- ===== Modal: Perfil ===== -->
+    <dialog id="modal-perfil" class="rounded-2xl p-0 w-full max-w-md backdrop:bg-neutral-900/50">
+        <form method="dialog" class="p-6 space-y-5">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-neutral-900">Perfil</h3>
+                <button type="button" onclick="document.getElementById('modal-perfil').close()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <img id="profile-photo" src="" alt="Foto de perfil" class="w-16 h-16 rounded-full object-cover border-2 border-brand-200">
+                    <button type="button" onclick="document.getElementById('profile-photo-input').click()" class="absolute -bottom-1 -right-1 w-6 h-6 bg-brand-800 text-white rounded-full flex items-center justify-center hover:bg-brand-700 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                    </button>
+                    <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="atualizarFotoPerfilPreview(this)">
+                </div>
+                <button type="button" onclick="document.getElementById('profile-photo-input').click()" class="text-sm font-semibold text-brand-700 hover:underline">Alterar foto</button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Nome completo</label>
+                    <input type="text" id="profile-nome" value="" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                </div>
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">E-mail</label>
+                    <div class="flex gap-2 mt-1">
+                        <input type="email" id="profile-email" value="" readonly class="flex-1 border border-neutral-200 rounded-lg px-3 py-2 text-sm bg-neutral-50 text-neutral-600" />
+                        <button type="button" onclick="redefinirEmailPerfil()" class="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold text-brand-700 border border-brand-200 hover:bg-brand-50 transition-colors">Redefinir</button>
+                    </div>
+                    <p class="text-xs text-neutral-400 mt-1">O e-mail so pode ser alterado via link enviado para sua caixa de entrada.</p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="cancelarEdicaoPerfil()" class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
+                <button type="button" onclick="salvarPerfil()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-brand-800 text-white hover:bg-brand-700">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- ===== Modal: Configurações ===== -->
+    <dialog id="modal-config" class="rounded-2xl p-0 w-full max-w-md backdrop:bg-neutral-900/50">
+        <div class="p-6 space-y-5">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-neutral-900">Configurações</h3>
+                <button type="button" onclick="document.getElementById('modal-config').close()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <label class="flex items-center justify-between">
+                    <span class="text-sm text-neutral-700">Notificações por e-mail</span>
+                    <input type="checkbox" id="cfg-email-notif" checked class="accent-brand-700 w-4 h-4" />
+                </label>
+                <label class="flex items-center justify-between">
+                    <span class="text-sm text-neutral-700">Notificações push</span>
+                    <input type="checkbox" id="cfg-push-notif" class="accent-brand-700 w-4 h-4" />
+                </label>
+                <label class="flex items-center justify-between">
+                    <span class="text-sm text-neutral-700">Alertar quando um post falhar</span>
+                    <input type="checkbox" id="cfg-fail-alert" checked class="accent-brand-700 w-4 h-4" />
+                </label>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="document.getElementById('modal-config').close()" class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
+                <button type="button" onclick="salvarConfiguracoes()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-brand-800 text-white hover:bg-brand-700">Salvar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- ===== Modal: Kwai — token manual ===== -->
+    <dialog id="modal-kwai" class="rounded-2xl p-0 w-full max-w-sm backdrop:bg-neutral-900/50">
+        <div class="p-6 space-y-4">
+            <h3 class="text-lg font-bold text-neutral-900">Conectar Kwai</h3>
+            <p class="text-sm text-neutral-500">
+                O Kwai não possui OAuth público. Insira o access token obtido no
+                <a href="https://developer.kwai.com" target="_blank" class="text-brand-700 underline">portal de desenvolvedores do Kwai</a>.
+            </p>
+            <div>
+                <label class="text-xs font-medium text-neutral-500">Access Token</label>
+                <input type="text" id="kwai-token-input" placeholder="Cole seu access token aqui"
+                       class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="document.getElementById('modal-kwai').close()"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
+                <button type="button" onclick="conectarKwai()"
+                        class="px-4 py-2 rounded-lg text-sm font-semibold bg-brand-800 text-white hover:bg-brand-700">Conectar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        const toast = (m, t) => API.utils.mostrarToast(m, t || 'success');
+
+        // Estado real das conexões
+        const estadoConexoes = {
+            instagram: false, tiktok: false, youtube: false, facebook: false, kwai: false
+        };
+
+        // Plataformas que usam OAuth real vs token manual (Kwai)
+        const OAUTH_PLATFORMS = ['instagram', 'tiktok', 'youtube', 'facebook'];
+
+        // Atualiza visualmente o item de uma plataforma
+        function renderizarPlataforma(nome, conectado) {
+            const badgeEl = document.getElementById('badge-' + nome);
+            const btnEl   = document.getElementById('btn-'   + nome);
+            const descEl  = document.getElementById('desc-'  + nome);
+            if (!badgeEl || !btnEl) return;
+
+            if (conectado) {
+                badgeEl.className = 'inline-flex items-center gap-1.5 text-xs font-semibold bg-brand-100 text-brand-700 px-2.5 py-1 rounded-full';
+                badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-brand-700"></span> Conectado';
+                // Desconectar chama API diretamente
+                btnEl.textContent = 'Desconectar';
+                btnEl.className   = 'text-xs font-medium text-neutral-500 hover:underline';
+                btnEl.onclick     = function () { desconectar(nome); };
+                if (descEl) descEl.textContent = 'Conta conectada';
+            } else {
+                badgeEl.className = 'inline-flex items-center gap-1.5 text-xs font-semibold bg-neutral-200 text-neutral-700 px-2.5 py-1 rounded-full';
+                badgeEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-neutral-500"></span> Desconectado';
+                btnEl.textContent = 'Conectar';
+                btnEl.className   = 'text-xs font-semibold text-brand-700 hover:underline';
+                if (descEl) descEl.textContent = 'Nenhuma conta conectada';
+
+                if (OAUTH_PLATFORMS.includes(nome)) {
+                    // Redireciona para o fluxo OAuth real, passando o token do usuário
+                    btnEl.onclick = function () {
+                        const token = API.utils.getToken();
+                        if (!token) { toast('Você precisa estar logado para conectar.', 'error'); return; }
+                        window.location.href = '/api/platforms/' + nome + '/oauth/start?token=' + encodeURIComponent(token);
+                    };
+                } else {
+                    // Kwai: sem OAuth público — abre modal de token manual
+                    btnEl.onclick = function () { abrirModalKwai(); };
+                }
+            }
+        }
+
+        // Desconectar via API
+        async function desconectar(nome) {
+            try {
+                await API.Platform.disconnect(nome);
+                estadoConexoes[nome] = false;
+                renderizarPlataforma(nome, false);
+                toast(nome.charAt(0).toUpperCase() + nome.slice(1) + ' desconectado.');
+            } catch (e) {
+                toast('Erro ao desconectar: ' + e.message, 'error');
+            }
+        }
+
+        // Kwai: conectar com access token manual
+        async function conectarKwai() {
+            const input = document.getElementById('kwai-token-input');
+            const val = (input ? input.value : '').trim();
+            if (!val) { toast('Informe o access token do Kwai.', 'error'); return; }
+            try {
+                await API.Platform.connect('kwai', { access_token: val });
+                estadoConexoes['kwai'] = true;
+                renderizarPlataforma('kwai', true);
+                document.getElementById('modal-kwai').close();
+                toast('Kwai conectado.');
+            } catch (e) {
+                toast('Erro ao conectar Kwai: ' + e.message, 'error');
+            }
+        }
+
+        function abrirModalKwai() {
+            const el = document.getElementById('modal-kwai');
+            if (el) el.showModal();
+        }
+
+        // Verifica se voltou de um OAuth com sucesso/erro
+        function verificarOAuthCallback() {
+            const params = new URLSearchParams(window.location.search);
+            const oauthError   = params.get('oauth_error');
+            const oauthSuccess = params.get('oauth_success');
+
+            if (oauthSuccess) {
+                const nome = oauthSuccess.charAt(0).toUpperCase() + oauthSuccess.slice(1);
+                toast(nome + ' conectado com sucesso!', 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
+
+            if (oauthError) {
+                const msg = decodeURIComponent(oauthError);
+                // Detectar erro de credenciais não configuradas → mostrar banner de setup
+                if (msg.toLowerCase().includes('não configuradas') || msg.toLowerCase().includes('nao configuradas') || msg.toLowerCase().includes('.env')) {
+                    mostrarBannerSetup(msg);
+                } else {
+                    toast('Erro na autorização: ' + msg, 'error');
+                }
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // Exibe um banner de aviso com instruções de configuração do .env
+        function mostrarBannerSetup(msg) {
+            const existente = document.getElementById('setup-banner');
+            if (existente) existente.remove();
+            const banner = document.createElement('div');
+            banner.id = 'setup-banner';
+            banner.className = 'bg-yellow-50 border border-yellow-300 rounded-2xl px-6 py-4 flex items-start gap-3';
+            banner.innerHTML = `
+                <svg class="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v3.75m0 3.75h.008M10.29 3.86 1.82 18a1.5 1.5 0 001.3 2.25h17.76a1.5 1.5 0 001.3-2.25L13.71 3.86a1.5 1.5 0 00-2.42 0z"/>
+                </svg>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-yellow-800">Configuração necessária</p>
+                    <p class="text-xs text-yellow-700 mt-1">${msg}</p>
+                    <p class="text-xs text-yellow-700 mt-2">
+                        Abra o arquivo <code class="bg-yellow-100 px-1 rounded">.env</code> na raiz do projeto,
+                        preencha as credenciais da plataforma e reinicie o servidor.
+                        Consulte o <code class="bg-yellow-100 px-1 rounded">.env.example</code> para ver quais variáveis são necessárias.
+                    </p>
+                </div>
+                <button onclick="document.getElementById('setup-banner').remove()"
+                        class="text-yellow-500 hover:text-yellow-800 shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>`;
+            // Inserir antes da lista de redes
+            const main = document.querySelector('main .container');
+            if (main) main.prepend(banner);
+        }
+
+        // Carrega o estado real de todas as plataformas da API
+        async function carregarConexoes() {
+            try {
+                const data = await API.Platform.list();
+                (data.platforms || []).forEach(function (p) {
+                    if (estadoConexoes.hasOwnProperty(p.name)) {
+                        estadoConexoes[p.name] = p.connected;
+                    }
+                    renderizarPlataforma(p.name, p.connected);
+                });
+            } catch (e) {
+                console.error('Erro ao carregar conexões:', e);
+            }
+        }
+
+        // ── Configurações ─────────────────────────────────────────────────────
+        function carregarConfiguracoes() {
+            const cfg = JSON.parse(localStorage.getItem('app_config') || '{}');
+            const emailChk = document.getElementById('cfg-email-notif');
+            const pushChk  = document.getElementById('cfg-push-notif');
+            const failChk  = document.getElementById('cfg-fail-alert');
+            if (emailChk) emailChk.checked = cfg.emailNotif !== false;
+            if (pushChk)  pushChk.checked  = cfg.pushNotif  === true;
+            if (failChk)  failChk.checked  = cfg.failAlert  !== false;
+        }
+
+        function salvarConfiguracoes() {
+            const emailChk = document.getElementById('cfg-email-notif');
+            const pushChk  = document.getElementById('cfg-push-notif');
+            const failChk  = document.getElementById('cfg-fail-alert');
+            localStorage.setItem('app_config', JSON.stringify({
+                emailNotif: emailChk ? emailChk.checked : true,
+                pushNotif:  pushChk  ? pushChk.checked  : false,
+                failAlert:  failChk  ? failChk.checked  : true,
+            }));
+            document.getElementById('modal-config').close();
+            toast('Configurações salvas!', 'success');
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            App.init();
+            verificarOAuthCallback();
+            carregarConfiguracoes();
+            carregarConexoes();
+            document.querySelectorAll('dialog').forEach(function (d) {
+                d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+            });
+        });
+    </script>
+</body>
+</html>

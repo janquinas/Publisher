@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PUBLISHER</title>
+
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- API Client + App -->
+    <script src="/assets/js/api_client.js"></script>
+    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/profile_modal.js"></script>
+    <link rel="stylesheet" href="/assets/css/global.css">
+
+    <!-- Paleta -->
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-50:  #FCE9EB;
+        --color-brand-100: #F7CFD4;
+        --color-brand-200: #EFA3AC;
+        --color-brand-300: #E3707D;
+        --color-brand-400: #D93D51;
+        --color-brand-500: #CB0A0A; /* accent vivo */
+        --color-brand-600: #A80E12;
+        --color-brand-700: #900D0D; /* maroon */
+        --color-brand-800: #880D1E; /* wine */
+        --color-brand-900: #5C0A14; /* quase preto-vinho */
+
+        --color-neutral-50:  #FAF8F8;
+        --color-neutral-100: #F2EFEF;
+        --color-neutral-200: #E8E8E8;
+        --color-neutral-400: #B9B4B4;
+        --color-neutral-500: #8A8585;
+        --color-neutral-700: #4A4444;
+        --color-neutral-900: #1A1616;
+
+        --color-ink: #000000;
+        --font-sans: Inter, system-ui, sans-serif;
+      }
+    </style>
+</head>
+
+<body class="flex min-h-screen bg-neutral-50 text-neutral-900 font-sans">
+    <!-- Sidebar -->
+    <aside class="w-64 shrink-0 bg-neutral-100 border-r border-neutral-200 flex flex-col">
+        <div class="px-6 py-6">
+            <span class="font-bold text-neutral-900 tracking-wide">PUBLISHER</span>
+        </div>
+        <nav class="flex-1 px-3 space-y-1">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                Dashboard
+            </a>
+            <a href="posts-agendados.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white text-neutral-900 font-semibold shadow-sm">
+                Posts agendados
+            </a>
+            <a href="analytics.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                Analytics
+            </a>
+            <a href="conexoes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                Conexões
+            </a>
+            <a href="ajuda.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-neutral-500 hover:bg-neutral-200 hover:text-neutral-900 transition-colors">
+                Ajuda
+            </a>
+        </nav>
+    </aside>
+    <!-- Conteúdo principal -->
+    <div class="flex-1 flex flex-col">
+
+        <!-- Header -->
+        <header class="bg-neutral-50 border-b border-neutral-200 px-6 py-4 shadow-sm flex items-center justify-between">
+            <h1 class="text-xl font-bold text-neutral-900">Posts agendados</h1>
+
+            <div class="flex items-center gap-3">
+                <!-- Botão de Suporte com Dropdown -->
+                <details class="relative">
+                    <summary class="list-none cursor-pointer text-xs font-medium text-neutral-600 hover:text-brand-700 flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-neutral-100 transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 4.18 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                        Suporte
+                    </summary>
+
+                    <div class="absolute right-0 mt-2 w-56 bg-white border border-neutral-200 rounded-xl shadow-lg py-2 text-sm z-10">
+                        <div class="px-3 py-2 border-b border-neutral-200">
+                            <p class="text-xs font-medium text-neutral-500">Escolha um suporte:</p>
+                        </div>
+                        <a href="https://discord.com/channels/@me/644151758859272228" target="_blank" 
+                           class="flex items-center gap-2 px-3 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-neutral-900">Conversar com Janquinas</p>
+                                <p class="text-xs text-neutral-500">Suporte técnico</p>
+                            </div>
+                            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                        <a href="https://discord.com/channels/@me/400121880385683457" target="_blank" 
+                           class="flex items-center gap-2 px-3 py-2.5 text-neutral-700 hover:bg-neutral-50 transition-colors">
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-neutral-900">Conversar com Aatrox</p>
+                                <p class="text-xs text-neutral-500">Suporte técnico</p>
+                            </div>
+                            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                    </div>
+                </details>
+
+                <!-- Menu de configurações: dropdown sem JS, usando <details>/<summary> -->
+                <details class="relative">
+                    <summary class="list-none cursor-pointer w-10 h-10 flex items-center justify-center rounded-lg hover:bg-neutral-200 transition-colors">
+                        <svg class="w-5 h-5 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </summary>
+
+                    <div class="absolute right-0 mt-2 w-52 bg-white border border-neutral-200 rounded-xl shadow-lg py-2 text-sm z-10">
+                        <button type="button" onclick="abrirModalPerfil()"
+                                class="w-full text-left block px-4 py-2.5 text-neutral-700 hover:bg-neutral-100">Perfil</button>
+                        <button type="button" onclick="document.getElementById('modal-config').showModal()"
+                                class="w-full text-left block px-4 py-2.5 text-neutral-700 hover:bg-neutral-100">Configurações</button>
+                        <a href="conexoes.html" class="block px-4 py-2.5 text-neutral-700 hover:bg-neutral-100">Contas conectadas</a>
+                        <hr class="my-1 border-neutral-200" />
+                        <a href="login.html?logout=true" class="block px-4 py-2.5 text-brand-700 hover:bg-neutral-100">Sair</a>
+                    </div>
+                </details>
+            </div>
+        </header>
+
+        <!-- Conteúdo -->
+        <main id="main-content" class="flex-1 p-6">
+            <div class="container mx-auto space-y-5">
+                <div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-200">
+                        <h3 class="font-semibold text-brand-800">Posts agendados</h3>
+                        <button onclick="abrirModalNovo()" class="text-xs font-semibold bg-brand-800 text-white px-3 py-1.5 rounded-full hover:bg-brand-700 transition-colors">
+                            + Novo agendamento
+                        </button>
+                    </div>
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-left text-neutral-500 text-xs">
+                                <th class="px-6 py-3 font-medium">Post</th>
+                                <th class="px-6 py-3 font-medium">Rede</th>
+                                <th class="px-6 py-3 font-medium">Conta</th>
+                                <th class="px-6 py-3 font-medium">Data / Hora</th>
+                                <th class="px-6 py-3 font-medium text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agendamentos-table" class="divide-y divide-neutral-100">
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-neutral-500">
+                                    Carregando agendamentos...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <!-- ===== Modal: Perfil ===== -->
+    <dialog id="modal-perfil" class="rounded-2xl p-0 w-full max-w-md backdrop:bg-neutral-900/50">
+        <form method="dialog" class="p-6 space-y-5">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-neutral-900">Perfil</h3>
+                <button type="button" onclick="document.getElementById('modal-perfil').close()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-500" data-close>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <img id="profile-photo" src="https://i.pravatar.cc/150?img=11" alt="Foto de perfil" class="w-16 h-16 rounded-full object-cover border-2 border-brand-200">
+                    <button type="button" onclick="document.getElementById('profile-photo-input').click()" class="absolute -bottom-1 -right-1 w-6 h-6 bg-brand-800 text-white rounded-full flex items-center justify-center hover:bg-brand-700 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                    </button>
+                    <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="atualizarFotoPerfilPreview(this)">
+                </div>
+                <button type="button" onclick="document.getElementById('profile-photo-input').click()" class="text-sm font-semibold text-brand-700 hover:underline">
+                    Alterar foto
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Nome completo</label>
+                    <input type="text" id="profile-nome" value=""
+                           class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                </div>
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">E-mail</label>
+                    <div class="flex gap-2 mt-1">
+                        <input type="email" id="profile-email" value="" readonly
+                               class="flex-1 border border-neutral-200 rounded-lg px-3 py-2 text-sm bg-neutral-50 text-neutral-600" />
+                        <button type="button" onclick="redefinirEmailPerfil()"
+                                class="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold text-brand-700 border border-brand-200 hover:bg-brand-50 transition-colors">
+                            Redefinir
+                        </button>
+                    </div>
+                    <p class="text-xs text-neutral-400 mt-1">O e-mail so pode ser alterado via link enviado para sua caixa de entrada.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="cancelarEdicaoPerfil()" class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
+                <button type="button" onclick="salvarPerfil()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-brand-800 text-white hover:bg-brand-700">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <!-- ===== Modal: Configurações ===== -->
+    <dialog id="modal-config" class="rounded-2xl p-0 w-full max-w-md backdrop:bg-neutral-900/50">
+        <div class="p-6 space-y-5">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-neutral-900">Configurações</h3>
+                <button type="button" onclick="document.getElementById('modal-config').close()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <label class="flex items-center justify-between">
+                    <span class="text-sm text-neutral-700">Notificações por e-mail</span>
+                    <input type="checkbox" id="cfg-email-notif" checked class="accent-brand-700 w-4 h-4" />
+                </label>
+                <label class="flex items-center justify-between">
+                    <span class="text-sm text-neutral-700">Notificações push</span>
+                    <input type="checkbox" id="cfg-push-notif" class="accent-brand-700 w-4 h-4" />
+                </label>
+                <label class="flex items-center justify-between">
+                    <span class="text-sm text-neutral-700">Alertar quando um post falhar</span>
+                    <input type="checkbox" id="cfg-fail-alert" checked class="accent-brand-700 w-4 h-4" />
+                </label>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="document.getElementById('modal-config').close()"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
+                <button type="button" onclick="salvarConfiguracoes()"
+                        class="px-4 py-2 rounded-lg text-sm font-semibold bg-brand-800 text-white hover:bg-brand-700">Salvar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- ===== Modal: Novo Agendamento ===== -->
+    <dialog id="modal-novo" class="rounded-2xl p-0 w-full max-w-md backdrop:bg-neutral-900/50">
+        <div class="p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-neutral-900">Novo agendamento</h3>
+                <button type="button" onclick="document.getElementById('modal-novo').close()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Seletor de mídia da biblioteca -->
+            <div>
+                <label class="text-xs font-medium text-neutral-500">Vídeo da biblioteca</label>
+                <select id="novo-media-id" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                    <option value="">— Selecione um vídeo —</option>
+                </select>
+                <p class="text-xs text-neutral-400 mt-1">Escolha um vídeo já enviado ou deixe em branco para criar sem mídia.</p>
+            </div>
+
+            <div>
+                <label class="text-xs font-medium text-neutral-500">Título do post</label>
+                <input type="text" id="novo-titulo"
+                       class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Tipo</label>
+                    <select id="novo-tipo" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                        <option>Reel</option>
+                        <option>Story</option>
+                        <option>Carrossel</option>
+                        <option>Live</option>
+                        <option>Post</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Rede social</label>
+                    <select id="novo-rede" onchange="atualizarContasNovo()" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                        <option>Instagram</option>
+                        <option>TikTok</option>
+                        <option>YouTube</option>
+                        <option>Facebook</option>
+                        <option>Kwai</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-medium text-neutral-500">Conta</label>
+                <select id="novo-conta" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                    <option>@user.oficial</option>
+                </select>
+                <div id="novo-conexao-aviso" class="hidden mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-xs text-yellow-800">Esta rede social não está conectada. <a href="conexoes.html" class="underline font-medium">Conectar agora</a></p>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-medium text-neutral-500">Data e hora</label>
+                <input type="datetime-local" id="novo-data-hora"
+                       class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Repetir</label>
+                    <select id="novo-loop" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                        <option value="0">Nunca</option>
+                        <option value="1">Diariamente</option>
+                        <option value="7">Semanalmente</option>
+                        <option value="30">Mensalmente</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Até quando (opcional)</label>
+                    <input type="date" id="novo-data-fim"
+                           class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="document.getElementById('modal-novo').close()"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
+                <button type="button" onclick="criarNovoPost()"
+                        class="px-4 py-2 rounded-lg text-sm font-semibold bg-brand-800 text-white hover:bg-brand-700">Agendar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- ===== Modal: Editar Post ===== -->
+    <dialog id="modal-editar" class="rounded-2xl p-0 w-full max-w-md backdrop:bg-neutral-900/50">
+        <div class="p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-neutral-900">Editar agendamento</h3>
+                <button type="button" onclick="document.getElementById('modal-editar').close()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 text-neutral-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div>
+                <label class="text-xs font-medium text-neutral-500">Título do post</label>
+                <input type="text" id="edit-titulo"
+                       class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Tipo</label>
+                    <select id="edit-tipo" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                        <option>Reel</option>
+                        <option>Story</option>
+                        <option>Carrossel</option>
+                        <option>Live</option>
+                        <option>Post</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Rede social</label>
+                    <select id="edit-rede" onchange="atualizarContasEdit()" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                        <option>Instagram</option>
+                        <option>TikTok</option>
+                        <option>YouTube</option>
+                        <option>Facebook</option>
+                        <option>Kwai</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-medium text-neutral-500">Conta</label>
+                <select id="edit-conta" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                    <option>@user.oficial</option>
+                </select>
+                <div id="edit-conexao-aviso" class="hidden mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-xs text-yellow-800">Esta rede social não está conectada. <a href="conexoes.html" class="underline font-medium">Conectar agora</a></p>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-medium text-neutral-500">Data e hora</label>
+                <input type="datetime-local" id="edit-data-hora"
+                       class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Repetir</label>
+                    <select id="edit-loop" class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                        <option value="0">Nunca</option>
+                        <option value="1">Diariamente</option>
+                        <option value="7">Semanalmente</option>
+                        <option value="30">Mensalmente</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-medium text-neutral-500">Até quando (opcional)</label>
+                    <input type="date" id="edit-data-fim"
+                           class="mt-1 w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400" />
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="document.getElementById('modal-editar').close()"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
+                <button type="button" onclick="salvarEdicao()"
+                        class="px-4 py-2 rounded-lg text-sm font-semibold bg-brand-800 text-white hover:bg-brand-700">Salvar alterações</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- ===== Modal: Confirmar Exclusão ===== -->
+    <dialog id="modal-excluir" class="rounded-2xl p-0 w-full max-w-sm backdrop:bg-neutral-900/50">
+        <div class="p-6 space-y-4">
+            <h3 class="text-lg font-bold text-neutral-900">Excluir agendamento?</h3>
+            <p class="text-sm text-neutral-500">
+                Esta ação não pode ser desfeita. O post será removido permanentemente da lista de agendamentos.
+            </p>
+            <input type="hidden" id="post-id-excluir" />
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="document.getElementById('modal-excluir').close()"
+                        class="px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-100">Cancelar</button>
+                <button type="button" onclick="confirmarExclusao()"
+                        class="px-4 py-2 rounded-lg text-sm font-semibold bg-red-600 text-white hover:bg-red-700">Excluir</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        // Alias unificado — usa a função centralizada do api_client.js
+        const mostrarToast = (m, t) => API.utils.mostrarToast(m, t || 'success');
+
+        // Estado dos posts (carregado do backend)
+        let posts = [];
+        let postEditandoId = null;
+
+        // Estado real das conexões — preenchido em carregarConexoes()
+        const estadoConexoes = {
+            'Instagram': false, 'TikTok': false, 'YouTube': false, 'Facebook': false, 'Kwai': false
+        };
+
+        // Carrega o estado de conexão das plataformas da API
+        async function carregarConexoes() {
+            try {
+                const data = await API.Platform.list();
+                (data.platforms || []).forEach(function (p) {
+                    // A API retorna nome em minúsculas; normalizar para o padrão do objeto
+                    const nome = p.name.charAt(0).toUpperCase() + p.name.slice(1).toLowerCase();
+                    if (estadoConexoes.hasOwnProperty(nome)) {
+                        estadoConexoes[nome] = p.connected;
+                    }
+                });
+            } catch (e) {
+                console.warn('Não foi possível carregar conexões:', e.message);
+            }
+        }
+
+        // ── Configurações ─────────────────────────────────────────────────────
+        function carregarConfiguracoes() {
+            const cfg = JSON.parse(localStorage.getItem('app_config') || '{}');
+            const emailChk = document.getElementById('cfg-email-notif');
+            const pushChk  = document.getElementById('cfg-push-notif');
+            const failChk  = document.getElementById('cfg-fail-alert');
+            if (emailChk) emailChk.checked = cfg.emailNotif !== false;
+            if (pushChk)  pushChk.checked  = cfg.pushNotif  === true;
+            if (failChk)  failChk.checked  = cfg.failAlert  !== false;
+        }
+
+        function salvarConfiguracoes() {
+            const emailChk = document.getElementById('cfg-email-notif');
+            const pushChk  = document.getElementById('cfg-push-notif');
+            const failChk  = document.getElementById('cfg-fail-alert');
+            localStorage.setItem('app_config', JSON.stringify({
+                emailNotif: emailChk ? emailChk.checked : true,
+                pushNotif:  pushChk  ? pushChk.checked  : false,
+                failAlert:  failChk  ? failChk.checked  : true,
+            }));
+            document.getElementById('modal-config').close();
+            mostrarToast('Configurações salvas!', 'success');
+        }
+
+        // Carregar agendamentos — usa GET /api/publications/ (mesmo endpoint de criação)
+        async function carregarAgendamentos() {
+            const tbody = document.getElementById('agendamentos-table');
+            try {
+                const data = await API.Publication.list();
+                const items = data.publications || [];
+                if (items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-neutral-500">Nenhum agendamento encontrado</td></tr>';
+                    posts = []; return;
+                }
+                posts = items.map(item => {
+                    const dtRef = item.scheduled_at
+                        ? new Date(item.scheduled_at)
+                        : (item.created_at ? new Date(item.created_at) : null);
+                    const dataStr = dtRef ? dtRef.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+                    const horaStr = dtRef ? dtRef.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) : '—';
+                    const partes = (item.title || '').split(' — ');
+                    return {
+                        id: item.id,
+                        tipo: partes.length > 1 ? partes[0] : 'Post',
+                        titulo: partes.length > 1 ? partes.slice(1).join(' — ') : item.title,
+                        rede: (item.platforms && item.platforms[0]) ? item.platforms[0] : 'Instagram',
+                        conta: '@user.oficial',
+                        data: dataStr, hora: horaStr,
+                        scheduled_at_raw: item.scheduled_at || null,
+                        status: item.status === 'scheduled' ? 'Agendado' : (item.status || 'pending'),
+                    };
+                });
+
+                atualizarTabela();
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-600">Erro ao carregar agendamentos: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Abrir modal de edição
+        function abrirModalEdicao(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+            postEditandoId = postId;
+            document.getElementById('edit-titulo').value = post.titulo;
+            document.getElementById('edit-tipo').value = post.tipo;
+            document.getElementById('edit-rede').value = post.rede;
+            atualizarContasEdit();
+            document.getElementById('edit-conta').value = post.conta;
+            // Usar scheduled_at real se disponível (tarefa 4)
+            if (post.scheduled_at_raw) {
+                const dt = new Date(post.scheduled_at_raw);
+                dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+                document.getElementById('edit-data-hora').value = dt.toISOString().slice(0, 16);
+            } else {
+                const agora = new Date();
+                agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+                document.getElementById('edit-data-hora').value = agora.toISOString().slice(0, 16);
+            }
+            document.getElementById('edit-conexao-aviso').classList.toggle('hidden', verificarConexao(post.rede));
+            document.getElementById('modal-editar').showModal();
+        }
+
+        // Atualizar lista de contas baseado na rede selecionada (modal editar)
+        function atualizarContasEdit() {
+            const rede = document.getElementById('edit-rede').value;
+            document.getElementById('edit-conta').innerHTML = obterContas(rede).map(c => `<option>${c}</option>`).join('');
+            document.getElementById('edit-conexao-aviso').classList.toggle('hidden', verificarConexao(rede));
+        }
+
+        // Salvar edição — persiste via API.Publication.update
+        async function salvarEdicao() {
+            const postIndex = posts.findIndex(p => p.id === postEditandoId);
+            if (postIndex === -1) return;
+            const titulo = document.getElementById('edit-titulo').value.trim();
+            if (!titulo) { mostrarToast('Informe o título do post.', 'error'); return; }
+            const tipo = document.getElementById('edit-tipo').value;
+            const rede = document.getElementById('edit-rede').value.toLowerCase();
+            const dataHoraVal = document.getElementById('edit-data-hora').value;
+            const dataHora = dataHoraVal ? new Date(dataHoraVal) : null;
+            try {
+                await API.Publication.update(postEditandoId, {
+                    title: `${tipo} — ${titulo}`,
+                    description: `${tipo} — ${titulo}`,
+                    platforms: [rede],
+                    scheduled_at: dataHora ? dataHora.toISOString() : null,
+                });
+                await carregarAgendamentos();
+                document.getElementById('modal-editar').close();
+                mostrarToast('Post atualizado com sucesso!', 'success');
+            } catch (error) {
+                mostrarToast('Erro ao salvar: ' + error.message, 'error');
+            }
+        }
+
+        // Abrir modal de confirmação de exclusão
+        function abrirModalExclusao(postId) {
+            document.getElementById('post-id-excluir').value = postId;
+            document.getElementById('modal-excluir').showModal();
+        }
+
+        // Confirmar exclusão
+        async function confirmarExclusao() {
+            const postId = document.getElementById('post-id-excluir').value;
+            try {
+                await API.Publication.delete(postId);
+                await carregarAgendamentos();
+                document.getElementById('modal-excluir').close();
+                mostrarToast('Post excluído com sucesso!', 'success');
+            } catch (error) {
+                mostrarToast('Erro ao excluir: ' + error.message, 'error');
+            }
+        }
+
+        // Abrir modal de novo agendamento
+        async function abrirModalNovo() {
+            document.getElementById('novo-titulo').value = '';
+            document.getElementById('novo-tipo').value = 'Reel';
+            document.getElementById('novo-rede').value = 'Instagram';
+            atualizarContasNovo();
+            const agora = new Date();
+            agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+            document.getElementById('novo-data-hora').value = agora.toISOString().slice(0, 16);
+            document.getElementById('novo-loop').value = '0';
+            document.getElementById('novo-data-fim').value = '';
+            // Carregar biblioteca de mídia no seletor (não bloqueia abertura do modal se falhar)
+            try {
+                await carregarMidiaNoSeletor('novo-media-id');
+            } catch (e) {
+                console.warn('Não foi possível carregar biblioteca de mídia:', e);
+            }
+            document.getElementById('modal-novo').showModal();
+        }
+
+        // Preenche um <select> com os vídeos da biblioteca
+        async function carregarMidiaNoSeletor(selectId) {
+            const sel = document.getElementById(selectId);
+            sel.innerHTML = '<option value="">— Selecione um vídeo —</option>';
+            try {
+                const data = await API.Media.list();
+                (data.media || []).forEach(function (item) {
+                    const opt = document.createElement('option');
+                    opt.value = item.id;
+                    opt.textContent = (item.title || 'Vídeo sem título') + ' (' + (item.media_format || '') + ')';
+                    opt.dataset.titulo     = item.title     || '';
+                    opt.dataset.mediaPath  = item.media_path || '';  // nome real do arquivo no disco
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                console.error('Erro ao carregar mídia no seletor:', e);
+            }
+            // Auto-preencher o título ao selecionar um vídeo
+            sel.onchange = function () {
+                const opt = sel.options[sel.selectedIndex];
+                const tituloInput = document.getElementById('novo-titulo');
+                if (opt && opt.dataset.titulo) {
+                    tituloInput.value = opt.dataset.titulo;
+                }
+            };
+        }
+
+        // Atualizar lista de contas baseado na rede selecionada (modal novo)
+        function atualizarContasNovo() {
+            const rede = document.getElementById('novo-rede').value;
+            document.getElementById('novo-conta').innerHTML = obterContas(rede).map(c => `<option>${c}</option>`).join('');
+            document.getElementById('novo-conexao-aviso').classList.toggle('hidden', verificarConexao(rede));
+        }
+
+        // Criar novo post
+        async function criarNovoPost() {
+            const titulo    = document.getElementById('novo-titulo').value.trim();
+            const dataHora  = document.getElementById('novo-data-hora').value;
+            const tipo      = document.getElementById('novo-tipo').value;
+            const rede      = document.getElementById('novo-rede').value.toLowerCase();
+            const mediaSel  = document.getElementById('novo-media-id');
+            const mediaId   = mediaSel ? mediaSel.value : '';
+            // Pegar o nome real do arquivo no disco (data-media-path)
+            const mediaOpt  = mediaSel ? mediaSel.options[mediaSel.selectedIndex] : null;
+            const mediaPath = (mediaOpt && mediaOpt.dataset.mediaPath) ? mediaOpt.dataset.mediaPath : '';
+
+            if (!titulo)   { mostrarToast('Informe o título do post.', 'error'); return; }
+            if (!dataHora) { mostrarToast('Informe a data e hora.', 'error'); return; }
+
+            try {
+                const payload = {
+                    title:        `${tipo} — ${titulo}`,
+                    description:  `${tipo} — ${titulo}`,
+                    platforms:    [rede],
+                    scheduled_at: new Date(dataHora).toISOString(),
+                };
+                // Associar o vídeo da biblioteca se selecionado
+                if (mediaId && mediaPath) {
+                    payload.media_path = mediaPath;  // nome do arquivo salvo em disk
+                }
+                await API.Publication.create(payload);
+                await carregarAgendamentos();
+                document.getElementById('modal-novo').close();
+                mostrarToast('Novo agendamento criado com sucesso!', 'success');
+            } catch (error) {
+                mostrarToast('Erro ao criar agendamento: ' + error.message, 'error');
+            }
+        }
+
+        // Atualizar tabela
+        function atualizarTabela() {
+            const tbody = document.querySelector('tbody');
+            if (!posts.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-neutral-500">Nenhum agendamento encontrado</td></tr>';
+                return;
+            }
+            tbody.innerHTML = posts.map(post => {
+                const isCancelado = post.status === 'Cancelado' || post.status === 'cancelled';
+                const cls = isCancelado ? 'opacity-50' : '';
+                const clsTxt = isCancelado ? 'line-through text-neutral-400' : 'text-neutral-500';
+                return `
+                    <tr class="${cls}">
+                        <td class="px-6 py-3.5 ${isCancelado ? 'line-through text-neutral-400' : ''}">${post.tipo} — ${post.titulo}</td>
+                        <td class="px-6 py-3.5 ${clsTxt}">${post.rede}</td>
+                        <td class="px-6 py-3.5 ${clsTxt}">${post.conta}</td>
+                        <td class="px-6 py-3.5 ${clsTxt}">${post.data}, ${post.hora}</td>
+                        <td class="px-6 py-3.5 text-right space-x-2">
+                            ${!isCancelado ? `
+                                <button onclick="abrirModalEdicao('${post.id}')" class="text-xs font-medium text-brand-700 hover:underline">Editar</button>
+                                <button onclick="cancelarAgendamento('${post.id}')" class="text-xs font-medium text-neutral-500 hover:underline">Cancelar</button>
+                            ` : '<span class="text-xs text-neutral-400">Cancelado</span>'}
+                            <button onclick="abrirModalExclusao('${post.id}')" class="text-xs font-medium text-red-600 hover:underline">Excluir</button>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        // Mostrar toast
+        function mostrarToast(mensagem, tipo) {
+            return API.utils.mostrarToast(mensagem, tipo || 'success');
+        }
+
+        // Cancelar agendamento
+        async function cancelarAgendamento(postId) {
+            try {
+                await API.Publication.cancel(postId);
+                await carregarAgendamentos();
+                mostrarToast('Agendamento cancelado!', 'success');
+            } catch (error) {
+                mostrarToast('Erro ao cancelar: ' + error.message, 'error');
+            }
+        }
+
+        // ===== Modal de Perfil — gerenciado por profile_modal.js =====
+
+        // Obter contas fictícias por rede (até suporte multi-conta real)
+        function obterContas(redeSocial) {
+            const mapa = {
+                'Instagram': ['@user.oficial'], 'TikTok': ['@user.oficial'],
+                'YouTube': ['@user.oficial'],   'Facebook': ['@user.oficial'],
+                'Kwai': ['@user.oficial'],
+            };
+            return mapa[redeSocial] || ['@user.oficial'];
+        }
+
+        // Verificar conexão com rede social (usa o estado carregado da API)
+        function verificarConexao(redeSocial) {
+            return estadoConexoes[redeSocial] || false;
+        }
+
+        // Inicializar página
+        document.addEventListener('DOMContentLoaded', function () {
+            App.init();
+            carregarConfiguracoes();
+            // Cada chamada de API em bloco independente para que um erro não bloqueie os demais
+            carregarConexoes().catch(function (e) {
+                console.warn('carregarConexoes:', e);
+            });
+            carregarAgendamentos().catch(function (e) {
+                console.warn('carregarAgendamentos:', e);
+            });
+            document.querySelectorAll('dialog').forEach(function (dialog) {
+                dialog.addEventListener('click', function (event) {
+                    if (event.target === dialog) dialog.close();
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>

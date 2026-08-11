@@ -1,0 +1,1 @@
+# Core do Sistema de Publicação Automatizada
